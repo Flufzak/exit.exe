@@ -5,4 +5,8 @@
   <Folder Name="/Hosting/">
     <Project Path="Exit.exe.AppHost/Exit.exe.AppHost.csproj" />
   </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
 </Solution>

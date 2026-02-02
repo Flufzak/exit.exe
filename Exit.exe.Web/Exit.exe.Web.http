@@ -1,0 +1,6 @@
+@Exit.exe.Web_HostAddress = http://localhost:5019
+
+GET {{Exit.exe.Web_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

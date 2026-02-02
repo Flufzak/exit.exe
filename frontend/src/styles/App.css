@@ -1,0 +1,25 @@
+.app {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #0a0a0a;
+}
+
+.container {
+  text-align: center;
+  padding: 2rem;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+  color: #646cff;
+  margin-bottom: 1rem;
+}
+
+.message {
+  font-size: 1.5em;
+  color: rgba(255, 255, 255, 0.7);
+}

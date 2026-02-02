@@ -5,6 +5,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Aspire.Hosting.NodeJs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\Exit.exe.Web\Exit.exe.Web.csproj" />
 	</ItemGroup>
 </Project>

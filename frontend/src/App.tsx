@@ -1,14 +1,7 @@
-import './styles/App.css'
-
-function App() {
+﻿export default function App() {
   return (
-    <div className="app">
-      <div className="container">
-        <h1>Exit.exe</h1>
-        <p className="message">UI scaffold ready</p>
-      </div>
+    <div className="min-h-screen bg-red-500 text-white flex items-center justify-center text-4xl">
+      Tailwind werkt 🔥
     </div>
-  )
+  );
 }
-
-export default App

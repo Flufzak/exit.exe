@@ -1,7 +1,7 @@
 ﻿export default function App() {
   return (
-    <div className="min-h-screen bg-red-500 text-white flex items-center justify-center text-4xl">
-      Tailwind werkt 🔥
+    <div className="min-h-screen w-screen bg-black flex items-center justify-center">
+      <h1 className="text-6xl font-bold text-red-500">TAILWIND WERKT 🔥</h1>
     </div>
   );
 }

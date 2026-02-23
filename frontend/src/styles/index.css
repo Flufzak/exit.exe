@@ -1,31 +1,50 @@
+@import "@fontsource/space-mono/400.css";
+@import "@fontsource/space-mono/700.css";
+@import "@fontsource/space-mono/400-italic.css";
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family:
+    "Space Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #1a1a1a;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --bg: #0e1116;
+  --surface: #1c212b;
+  --border: #2a2f3a;
+  --text-primary: #e5e7eb;
+  --text-secondary: #9ca3af;
+  --accent: #6ee7b7;
+  --accent-rgb: 110 231 183;
+  --danger: #e26d5a;
 }
 
+/* Dark theme */
+html[data-theme="light"] {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --border: #d1d5db;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --accent: #10b981;
+  --accent-rgb: 16 185 129;
+  --danger: #d94841;
+}
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+}
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-  background-color: #1a1a1a;
 }
 
 #root {

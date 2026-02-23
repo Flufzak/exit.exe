@@ -1,15 +1,14 @@
-import Loader from "./components/ui/Loader";
+import Home from "./pages/Home";
 import "./styles/App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
   return (
-    <div className="app">
-      <div className="container">
-        <h1>Exit.exe</h1>
-        <Loader />
-        <p className="message">UI scaffold ready</p>
-      </div>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

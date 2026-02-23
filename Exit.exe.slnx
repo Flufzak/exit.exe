@@ -5,6 +5,9 @@
   <Folder Name="/Hosting/">
     <Project Path="Exit.exe.AppHost/Exit.exe.AppHost.csproj" />
   </Folder>
+  <Folder Name="/Repositories/">
+    <Project Path="Exit.exe.Repository/Exit.exe.Repository.csproj" Id="e6fc79fa-1c3e-4f21-bd03-bf706ef4afd3" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />

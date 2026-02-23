@@ -1,20 +1,53 @@
-var builder = WebApplication.CreateBuilder(args);
+using Exit.exe.Repository.Auth;
+using Exit.exe.Repository.Data.App;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+var config = builder.Configuration;
+
+services.AddControllers();
+
+var conn = config.GetConnectionString("DefaultConnection")!;
+var migrationsAssembly = typeof(AuthDbContext).Assembly.FullName;
+
+services.AddDbContext<AuthDbContext>(opt =>
+    opt.UseSqlServer(conn, o => o.MigrationsAssembly(migrationsAssembly)));
+
+services.AddDbContext<AppDbContext>(opt =>
+    opt.UseSqlServer(conn, o => o.MigrationsAssembly(migrationsAssembly)));
+
+services
+    .AddIdentityCore<ApplicationUser>(opt => opt.User.RequireUniqueEmail = true)
+    .AddEntityFrameworkStores<AuthDbContext>()
+    .AddSignInManager()
+    .AddDefaultTokenProviders();
+
+services
+    .AddAuthentication(options =>
+    {
+        options.DefaultScheme = IdentityConstants.ApplicationScheme;
+        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+    })
+    .AddCookie(IdentityConstants.ApplicationScheme)
+    .AddCookie(IdentityConstants.ExternalScheme)
+    .AddGoogle("Google", o =>
+    {
+        o.ClientId = config["Authentication:Google:ClientId"]!;
+        o.ClientSecret = config["Authentication:Google:ClientSecret"]!;
+    })
+    .AddMicrosoftAccount("Microsoft", o =>
+    {
+        o.ClientId = config["Authentication:Microsoft:ClientId"]!;
+        o.ClientSecret = config["Authentication:Microsoft:ClientSecret"]!;
+    });
+
+services.AddAuthorization();
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
-
 app.UseHttpsRedirection();
-
-
-
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
 await app.RunAsync();
-

@@ -1,5 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\Exit.exe.Repository\Exit.exe.Repository.csproj" />
 	</ItemGroup>
 </Project>

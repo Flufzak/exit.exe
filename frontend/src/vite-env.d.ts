@@ -1,8 +1,9 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 
-declare module 'react' {
+declare module "*.css";
+declare module "react" {
   interface CSSProperties {
-    [key: `--${string}`]: string | number
+    [key: `--${string}`]: string | number;
   }
 }

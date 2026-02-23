@@ -1,3 +1,4 @@
+using Exit.exe.Application.Features.Games.Queries;
 using Exit.exe.Repository.Auth;
 using Exit.exe.Repository.Data.App;
 using Microsoft.AspNetCore.Identity;
@@ -7,7 +8,13 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var config = builder.Configuration;
 
+// Controllers register
 services.AddControllers();
+
+// CQRS/MediatR register
+services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(GetGamesQuery).Assembly));
+
 
 // ---- DB ----
 var conn = config.GetConnectionString("DefaultConnection");
@@ -103,6 +110,7 @@ services.AddAuthorization();
 
 var app = builder.Build();
 
+// Middleware pipeline
 app.UseHttpsRedirection();
 
 app.UseCors("Spa");         // must be before auth for browser calls

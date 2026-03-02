@@ -19,7 +19,7 @@ public sealed class GetStoriesQueryHandler
             new StoryDto(
                 "kazimir",
                 "Kazimir",
-                "A medieval cult escape experience.",
+                "Bound in the depths of a forgotten monastery, you are chosen for a ritual that promises immortality. The priests believe destiny has led you here. Prove them wrong.",
                 "60 min",
                 "Hard",
                 "Live",
@@ -28,7 +28,7 @@ public sealed class GetStoriesQueryHandler
             new StoryDto(
                 "abyss",
                 "The Abyss",
-                "Something is awakening below.",
+                "The descent was easy. The return will not be. The Abyss does not reveal its secrets without taking something in return.",
                 "75 min",
                 "Extreme",
                 "Coming Soon",

@@ -1,5 +1,6 @@
 import AppLayout from "./layout/AppLayout";
 import Home from "./pages/Home";
+import StoriesPage from "./pages/StoriesPage";
 import "./styles/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -9,6 +10,7 @@ function App() {
       <Routes>
         <Route element={<AppLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/stories" element={<StoriesPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

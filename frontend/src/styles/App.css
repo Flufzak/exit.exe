@@ -12,8 +12,35 @@ p {
   /* font-size: 1.5em; */
   color: var(--text-secondary);
 }
-a {
-  color: var(--accent);
+.accent-link {
+  position: relative;
+  color: var(--text-primary);
+  text-decoration: none;
   cursor: pointer;
-  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.accent-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 0%;
+  height: 2px;
+  background: var(--accent);
+  transition: width 0.25s ease;
+}
+
+.accent-link:hover {
+  color: var(--accent);
+}
+
+.accent-link:hover::after {
+  width: 100%;
+}
+
+/* keyboard accessibility */
+.accent-link:focus-visible {
+  outline: 2px solid rgba(var(--accent-rgb), 0.6);
+  outline-offset: 3px;
 }

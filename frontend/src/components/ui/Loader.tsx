@@ -18,12 +18,23 @@ const Loader = () => {
           </defs>
         </svg>
         <div className="box" />
+        <p className="loading-text">
+          Loading
+          <span className="dots" />
+        </p>
       </div>
     </StyledWrapper>
   );
 };
 
 const StyledWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 4rem 0;
+
   .loader {
     width: 100px;
     height: 100px;
@@ -169,6 +180,60 @@ const StyledWrapper = styled.div`
     }
     100% {
       filter: hue-rotate(0deg);
+    }
+  }
+  .loading-text {
+    margin-top: 2rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    opacity: 0.9;
+    font-weight: 500;
+
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    animation: fadePulse 2s ease-in-out infinite;
+  }
+
+  /* geanimeerde puntjes */
+  .loading-text .dots::after {
+    content: "";
+    display: inline-block;
+    width: 1.2em;
+    text-align: left;
+    animation: dots 1.4s steps(4, end) infinite;
+  }
+
+  @keyframes dots {
+    0% {
+      content: "";
+    }
+    25% {
+      content: ".";
+    }
+    50% {
+      content: "..";
+    }
+    75% {
+      content: "...";
+    }
+    100% {
+      content: "";
+    }
+  }
+
+  @keyframes fadePulse {
+    0% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.6;
     }
   }
 `;

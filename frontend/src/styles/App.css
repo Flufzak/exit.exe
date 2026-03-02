@@ -1,26 +1,19 @@
-.app {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  background: var(--bg);
-}
-
-.container {
-  text-align: center;
-  padding: 2rem;
-}
-
 h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-  color: var(--accent);
-  margin-bottom: 1rem;
+  font-size: 3.5rem;
+  color: var(--text-primary);
+  font-weight: 700;
+  text-shadow: 0 0 3px rgb(var(--accent-rgb));
+  /* margin-bottom: 1rem; */
 }
-
-.message {
-  font-size: 1.5em;
+p {
+  color: var(--text-primary);
+}
+.muted {
+  /* font-size: 1.5em; */
   color: var(--text-secondary);
+}
+a {
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: underline;
 }

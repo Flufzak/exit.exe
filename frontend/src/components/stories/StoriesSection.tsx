@@ -1,17 +1,21 @@
 import styled from "styled-components";
+import { Link, useLocation } from "react-router-dom";
 import StoryCard from "./StoryCard";
 import { useStories } from "../../hooks/useStories";
 import Loader from "../ui/Loader";
 
 export default function StoriesSection() {
   const { stories, loading, error } = useStories();
+  const location = useLocation();
+
+  const isHome = location.pathname === "/";
 
   if (loading) return <Loader />;
   if (error) return <p>{error}</p>;
 
-  const availableStories = stories.filter(
-    (story) => story.type === "available",
-  );
+  const availableStories = stories
+    .filter((story) => story.type === "available")
+    .slice(0, isHome ? 3 : undefined);
 
   const upcomingStories = stories.filter((story) => story.type === "upcoming");
 
@@ -19,7 +23,12 @@ export default function StoriesSection() {
     <Section>
       <Header>
         <h2>Available Stories</h2>
-        <ViewAll>View All</ViewAll>
+
+        {isHome && (
+          <ViewAll to="/stories" className="accent-link">
+            View All
+          </ViewAll>
+        )}
       </Header>
 
       <Cards>
@@ -58,7 +67,7 @@ const Header = styled.div`
 `;
 
 const SubHeader = styled.div`
-  margin-top: 1rem;
+  margin-top: 2rem;
   margin-bottom: 0.8rem;
   color: var(--text-primary);
 `;
@@ -69,9 +78,7 @@ const Cards = styled.div`
   gap: 1.5rem;
 `;
 
-const ViewAll = styled.span`
+const ViewAll = styled(Link)`
   font-size: 0.9rem;
-  color: var(--accent);
   cursor: pointer;
-  text-decoration: underline;
 `;

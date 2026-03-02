@@ -1,16 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web"><PropertyGroup>  <UserSecretsId>01e6c8d0-43f6-44f7-abc8-b3d67a074d9d</UserSecretsId>
-  </PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design">
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		  <PrivateAssets>all</PrivateAssets>
-		</PackageReference>
+		<PackageReference Include="MediatR" />
 	</ItemGroup>
+
 	<ItemGroup>
-	  <ProjectReference Include="..\Exit.exe.Repository\Exit.exe.Repository.csproj" />
+		<ProjectReference Include="..\Exit.exe.Repository\Exit.exe.Repository.csproj" />
+		<ProjectReference Include="..\Exit.exe.Application\Exit.exe.Application.csproj" />
 	</ItemGroup>
+
 </Project>

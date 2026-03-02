@@ -2,6 +2,9 @@
   <Folder Name="/Api/">
     <Project Path="Exit.exe.Web/Exit.exe.Web.csproj" />
   </Folder>
+  <Folder Name="/Application/">
+    <Project Path="Exit.exe.Application/Exit.exe.Application.csproj" Id="113e2fc1-f48f-40be-8aa4-7d8899dcfdea" />
+  </Folder>
   <Folder Name="/Hosting/">
     <Project Path="Exit.exe.AppHost/Exit.exe.AppHost.csproj" />
   </Folder>

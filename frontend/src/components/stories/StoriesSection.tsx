@@ -3,15 +3,22 @@ import { Link, useLocation } from "react-router-dom";
 import StoryCard from "./StoryCard";
 import { useStories } from "../../hooks/useStories";
 import Loader from "../ui/Loader";
+import Error from "../ui/Error";
 
 export default function StoriesSection() {
-  const { stories, loading, error } = useStories();
+  const { stories, loading, error, refetch } = useStories();
   const location = useLocation();
 
   const isHome = location.pathname === "/";
 
   if (loading) return <Loader />;
-  if (error) return <p>{error}</p>;
+  if (error)
+    return (
+      <Error
+        message={"Could not retrieve stories, please try again."}
+        onReload={refetch}
+      />
+    );
 
   const availableStories = stories
     .filter((story) => story.type === "available")

@@ -7,20 +7,23 @@ export function useStories() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchStories() {
-      try {
-        const data = await request<Story[]>("/api/stories");
-        setStories(data);
-      } catch (err) {
-        setError(err + "Failed to load stories");
-      } finally {
-        setLoading(false);
-      }
-    }
+  async function fetchStories() {
+    setLoading(true);
+    setError(null);
 
+    try {
+      const data = await request<Story[]>("/api/stories");
+      setStories(data);
+    } catch {
+      setError("Failed to load stories. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
     fetchStories();
   }, []);
 
-  return { stories, loading, error };
+  return { stories, loading, error, refetch: fetchStories };
 }

@@ -1,4 +1,5 @@
 using Exit.exe.Application.Features.Sessions.Commands;
+using Exit.exe.Application.Features.Sessions.Validators;
 using Exit.exe.Domain.Entities;
 using Exit.exe.Repository.Data.App;
 using Exit.exe.Repository.Repositories;
@@ -122,14 +123,15 @@ public class SubmitGuessCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_InvalidLetter_Throws()
+    public async Task Validate_InvalidLetter_Fails()
     {
-        using var db = TestDbContextFactory.Create();
-        var (sessionId, _) = SeedSession(db);
-        var handler = new SubmitGuessCommandHandler(new SessionRepository(db));
+        var validator = new SubmitGuessCommandValidator();
+        var command = new SubmitGuessCommand(Guid.NewGuid(), "12", UserId);
 
-        await Assert.ThrowsAsync<ArgumentException>(
-            () => handler.Handle(new SubmitGuessCommand(sessionId, "12", UserId), CancellationToken.None));
+        var result = await validator.ValidateAsync(command);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == "Letter");
     }
 
     [Fact]

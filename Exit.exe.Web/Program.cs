@@ -1,9 +1,11 @@
+using Exit.exe.Application.Behaviors;
 using Exit.exe.Application.Contracts;
 using Exit.exe.Application.Features.Games.Queries;
 using Exit.exe.Repository.Auth;
 using Exit.exe.Repository.Data.App;
 using Exit.exe.Repository.Repositories;
 using Exit.exe.Web.Infrastructure;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -42,8 +44,15 @@ services.AddOpenApi(options =>
 });
 
 // CQRS/MediatR register
+var applicationAssembly = typeof(GetGamesQuery).Assembly;
+
 services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssembly(typeof(GetGamesQuery).Assembly));
+{
+    cfg.RegisterServicesFromAssembly(applicationAssembly);
+    cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+});
+
+services.AddValidatorsFromAssembly(applicationAssembly);
 
 // ---- Repositories ----
 services.AddScoped<IPuzzleRepository, PuzzleRepository>();

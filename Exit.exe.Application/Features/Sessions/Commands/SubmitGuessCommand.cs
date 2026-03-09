@@ -23,9 +23,6 @@ public sealed class SubmitGuessCommandHandler(ISessionRepository sessionReposito
 
         var letter = request.Letter.ToUpperInvariant();
 
-        if (letter.Length != 1 || !char.IsLetter(letter[0]))
-            throw new ArgumentException("Guess must be a single letter.");
-
         var guessedLetters = HangmanHelper.ParseGuessedLetters(session.GuessedLetters);
 
         // Already guessed this letter

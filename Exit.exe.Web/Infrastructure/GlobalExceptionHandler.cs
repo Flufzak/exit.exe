@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,27 @@ internal sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> log
         Exception exception,
         CancellationToken cancellationToken)
     {
+        if (exception is ValidationException validationException)
+        {
+            logger.LogWarning(exception, "Validation failed");
+
+            var errors = validationException.Errors
+                .GroupBy(e => e.PropertyName)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(e => e.ErrorMessage).ToArray());
+
+            var validationProblem = new ValidationProblemDetails(errors)
+            {
+                Status = StatusCodes.Status422UnprocessableEntity,
+                Title = "Validation Failed"
+            };
+
+            httpContext.Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+            await httpContext.Response.WriteAsJsonAsync(validationProblem, cancellationToken);
+            return true;
+        }
+
         var (statusCode, title) = exception switch
         {
             KeyNotFoundException => (StatusCodes.Status404NotFound, "Not Found"),

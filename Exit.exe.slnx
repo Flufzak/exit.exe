@@ -15,5 +15,7 @@
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
   </Folder>
+  <Project Path="Exit.exe.Application.Tests/Exit.exe.Application.Tests.csproj" />
+  <Project Path="Exit.exe.Domain.Tests/Exit.exe.Domain.Tests.csproj" />
   <Project Path="Exit.exe.Domain/Exit.exe.Domain.csproj" />
 </Solution>

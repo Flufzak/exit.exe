@@ -40,7 +40,6 @@ services.AddOpenApi(options =>
 services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(GetGamesQuery).Assembly));
 
-
 // ---- DB ----
 var conn = config.GetConnectionString("DefaultConnection");
 if (string.IsNullOrWhiteSpace(conn))

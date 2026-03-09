@@ -18,7 +18,6 @@ public sealed class AuthController(
 {
     private static readonly HashSet<string> SupportedProviders =
         new(StringComparer.OrdinalIgnoreCase) { "Google" };
-    private readonly IConfiguration _config = config;
 
     // GET /api/auth/external/{provider}?returnUrl=...
     [HttpGet("external/{provider}")]
@@ -110,7 +109,7 @@ public sealed class AuthController(
 
     private string GetSafeReturnUrl(string? returnUrl)
     {
-        var fallback = _config["Auth:DefaultReturnUrl"] ?? "/";
+        var fallback = config["Auth:DefaultReturnUrl"] ?? "/";
 
         if (string.IsNullOrWhiteSpace(returnUrl))
             return fallback;
@@ -118,7 +117,7 @@ public sealed class AuthController(
         if (Url.IsLocalUrl(returnUrl))
             return returnUrl;
 
-        var allowed = _config.GetSection("Auth:AllowedReturnUrlPrefixes")
+        var allowed = config.GetSection("Auth:AllowedReturnUrlPrefixes")
             .GetChildren()
             .Select(c => c.Value)
             .Where(v => !string.IsNullOrWhiteSpace(v))

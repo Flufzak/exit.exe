@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Story } from "../../types/story";
+import { t } from "i18next";
 
 type Props = Story;
 
@@ -8,14 +9,7 @@ const storyImages: Record<string, string> = {
   abyss: "/images/nightfall.png",
 };
 
-export default function StoryCard({
-  id,
-  title,
-  description,
-  duration,
-  status,
-  type,
-}: Props) {
+export default function StoryCard({ id, duration, status, type }: Props) {
   const imageUrl = storyImages[id];
 
   return (
@@ -23,19 +17,27 @@ export default function StoryCard({
       <Image style={{ backgroundImage: `url(${imageUrl})` }} />
 
       <Content>
-        <Tag>{type === "upcoming" ? "New Chapter" : "Featured Story"}</Tag>
+        <Tag>
+          {type === "upcoming" ? t("tag-new-chapter") : t("tag-featured-story")}
+        </Tag>
 
-        <Title>{title}</Title>
-        <Description>{description}</Description>
+        <Title>{t(`story-${id}-title`)}</Title>
+        <Description>{t(`story-${id}-description`)}</Description>
 
         {type === "available" && (
           <Meta>
             {duration && <span>{duration}</span>}
-            {status && <Status>{status}</Status>}
+            {status && (
+              <Status>
+                {t(`status-${status.toLowerCase().replace(" ", "-")}`)}
+              </Status>
+            )}
           </Meta>
         )}
 
-        {type === "upcoming" && <LockedOverlay>Coming Soon</LockedOverlay>}
+        {type === "upcoming" && (
+          <LockedOverlay>{t("status-coming-soon")}</LockedOverlay>
+        )}
       </Content>
     </Card>
   );

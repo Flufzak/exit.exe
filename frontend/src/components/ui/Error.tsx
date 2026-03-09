@@ -1,5 +1,5 @@
+import { t } from "i18next";
 import styled from "styled-components";
-// import AppButton from "../components/AppButton";
 
 interface ErrorProps {
   message: string;
@@ -10,12 +10,10 @@ export default function Error({ message, onReload }: ErrorProps) {
   return (
     <Wrapper>
       <Box>
-        <Title>Archive Error</Title>
+        <Title>{t("error")}</Title>
         <Message>{message}</Message>
 
-        {/* <AppButton onClick={onReload}>Retry</AppButton> */}
-
-        <ReloadButton onClick={onReload}>Retry</ReloadButton>
+        <ReloadButton onClick={onReload}>{t("retry")}</ReloadButton>
       </Box>
     </Wrapper>
   );

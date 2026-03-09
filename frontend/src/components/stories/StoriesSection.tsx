@@ -4,6 +4,7 @@ import StoryCard from "./StoryCard";
 import { useStories } from "../../hooks/useStories";
 import Loader from "../ui/Loader";
 import Error from "../ui/Error";
+import { t } from "i18next";
 
 export default function StoriesSection() {
   const { stories, loading, error, refetch } = useStories();
@@ -15,7 +16,7 @@ export default function StoriesSection() {
   if (error)
     return (
       <Error
-        message={"Could not retrieve stories, please try again."}
+        message={t("retrieve-stories-error", { action: t("try-again") })}
         onReload={refetch}
       />
     );
@@ -29,11 +30,11 @@ export default function StoriesSection() {
   return (
     <Section>
       <Header>
-        <h2>Available Stories</h2>
+        <h2>{t("available-stories")}</h2>
 
         {isHome && (
           <ViewAll to="/stories" className="accent-link">
-            View All
+            {t("view-all")}
           </ViewAll>
         )}
       </Header>
@@ -47,7 +48,7 @@ export default function StoriesSection() {
       {upcomingStories.length > 0 && (
         <>
           <SubHeader>
-            <h2>Upcoming</h2>
+            <h2>{t("upcoming")}</h2>
           </SubHeader>
 
           <Cards>

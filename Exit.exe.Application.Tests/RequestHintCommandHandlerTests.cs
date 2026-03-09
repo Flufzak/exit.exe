@@ -1,6 +1,7 @@
 using Exit.exe.Application.Features.Sessions.Commands;
 using Exit.exe.Domain.Entities;
 using Exit.exe.Repository.Data.App;
+using Exit.exe.Repository.Repositories;
 
 namespace Exit.exe.Application.Tests;
 
@@ -40,7 +41,7 @@ public class RequestHintCommandHandlerTests
     {
         using var db = TestDbContextFactory.Create();
         var sessionId = SeedSession(db);
-        var handler = new RequestHintCommandHandler(db);
+        var handler = new RequestHintCommandHandler(new SessionRepository(db));
 
         var result = await handler.Handle(
             new RequestHintCommand(sessionId, UserId), CancellationToken.None);
@@ -54,7 +55,7 @@ public class RequestHintCommandHandlerTests
     {
         using var db = TestDbContextFactory.Create();
         var sessionId = SeedSession(db, hintsUsed: 1);
-        var handler = new RequestHintCommandHandler(db);
+        var handler = new RequestHintCommandHandler(new SessionRepository(db));
 
         var result = await handler.Handle(
             new RequestHintCommand(sessionId, UserId), CancellationToken.None);
@@ -68,7 +69,7 @@ public class RequestHintCommandHandlerTests
     {
         using var db = TestDbContextFactory.Create();
         var sessionId = SeedSession(db, hintsUsed: 2);
-        var handler = new RequestHintCommandHandler(db);
+        var handler = new RequestHintCommandHandler(new SessionRepository(db));
 
         var result = await handler.Handle(
             new RequestHintCommand(sessionId, UserId), CancellationToken.None);
@@ -82,7 +83,7 @@ public class RequestHintCommandHandlerTests
     {
         using var db = TestDbContextFactory.Create();
         var sessionId = SeedSession(db, hintsUsed: 3);
-        var handler = new RequestHintCommandHandler(db);
+        var handler = new RequestHintCommandHandler(new SessionRepository(db));
 
         await Assert.ThrowsAsync<InvalidOperationException>(
             () => handler.Handle(new RequestHintCommand(sessionId, UserId), CancellationToken.None));
@@ -93,7 +94,7 @@ public class RequestHintCommandHandlerTests
     {
         using var db = TestDbContextFactory.Create();
         var sessionId = SeedSession(db, status: SessionStatus.Failed);
-        var handler = new RequestHintCommandHandler(db);
+        var handler = new RequestHintCommandHandler(new SessionRepository(db));
 
         await Assert.ThrowsAsync<InvalidOperationException>(
             () => handler.Handle(new RequestHintCommand(sessionId, UserId), CancellationToken.None));

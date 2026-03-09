@@ -1,5 +1,6 @@
 using Exit.exe.Application.Features.Sessions.Commands;
 using Exit.exe.Domain.Entities;
+using Exit.exe.Repository.Repositories;
 
 namespace Exit.exe.Application.Tests;
 
@@ -20,7 +21,8 @@ public class StartSessionCommandHandlerTests
         });
         await db.SaveChangesAsync();
 
-        var handler = new StartSessionCommandHandler(db);
+        var handler = new StartSessionCommandHandler(
+            new PuzzleRepository(db), new SessionRepository(db));
         var command = new StartSessionCommand("hangman-test", "user-1");
 
         // Act
@@ -38,7 +40,8 @@ public class StartSessionCommandHandlerTests
     public async Task Handle_UnknownGameType_Throws()
     {
         using var db = TestDbContextFactory.Create();
-        var handler = new StartSessionCommandHandler(db);
+        var handler = new StartSessionCommandHandler(
+            new PuzzleRepository(db), new SessionRepository(db));
         var command = new StartSessionCommand("unknown", "user-1");
 
         await Assert.ThrowsAsync<InvalidOperationException>(

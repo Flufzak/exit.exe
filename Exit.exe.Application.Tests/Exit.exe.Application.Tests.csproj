@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Exit.exe.Application\Exit.exe.Application.csproj" />
+    <ProjectReference Include="..\Exit.exe.Repository\Exit.exe.Repository.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,8 @@
+using Exit.exe.Application.Contracts;
 using Exit.exe.Application.Features.Games.Queries;
 using Exit.exe.Repository.Auth;
 using Exit.exe.Repository.Data.App;
+using Exit.exe.Repository.Repositories;
 using Exit.exe.Web.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -42,6 +44,10 @@ services.AddOpenApi(options =>
 // CQRS/MediatR register
 services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(GetGamesQuery).Assembly));
+
+// ---- Repositories ----
+services.AddScoped<IPuzzleRepository, PuzzleRepository>();
+services.AddScoped<ISessionRepository, SessionRepository>();
 
 // ---- DB ----
 var conn = config.GetConnectionString("DefaultConnection");

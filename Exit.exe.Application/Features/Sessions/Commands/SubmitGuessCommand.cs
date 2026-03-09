@@ -1,21 +1,18 @@
 using System.Text.Json;
+using Exit.exe.Application.Contracts;
 using Exit.exe.Application.Features.Sessions.DTOs;
 using Exit.exe.Domain.Entities;
-using Exit.exe.Repository.Data.App;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Exit.exe.Application.Features.Sessions.Commands;
 
 public sealed record SubmitGuessCommand(Guid SessionId, string Letter, string UserId) : IRequest<GuessResultDto>;
 
-public sealed class SubmitGuessCommandHandler(AppDbContext db) : IRequestHandler<SubmitGuessCommand, GuessResultDto>
+public sealed class SubmitGuessCommandHandler(ISessionRepository sessionRepository) : IRequestHandler<SubmitGuessCommand, GuessResultDto>
 {
     public async Task<GuessResultDto> Handle(SubmitGuessCommand request, CancellationToken cancellationToken)
     {
-        var session = await db.GameSessions
-            .Include(s => s.Puzzle)
-            .FirstOrDefaultAsync(s => s.Id == request.SessionId && s.UserId == request.UserId, cancellationToken)
+        var session = await sessionRepository.GetWithPuzzleAsync(request.SessionId, request.UserId, cancellationToken)
             ?? throw new KeyNotFoundException($"Session '{request.SessionId}' not found.");
 
         if (session.Status != SessionStatus.InProgress)
@@ -61,7 +58,7 @@ public sealed class SubmitGuessCommandHandler(AppDbContext db) : IRequestHandler
             session.Score = 0;
         }
 
-        await db.SaveChangesAsync(cancellationToken);
+        await sessionRepository.SaveChangesAsync(cancellationToken);
 
         var maskedWord = HangmanHelper.MaskWord(word, guessedLetters);
 

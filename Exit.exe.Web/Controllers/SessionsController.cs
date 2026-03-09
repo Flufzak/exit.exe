@@ -14,6 +14,18 @@ namespace Exit.exe.Web.Controllers;
 public sealed class SessionsController(ISender sender) : ControllerBase
 {
     /// <summary>
+    /// GET /api/sessions — Get session history for the current user.
+    /// </summary>
+    [HttpGet]
+    public async Task<ActionResult<IReadOnlyList<SessionSummaryDto>>> History(CancellationToken ct)
+    {
+        var userId = GetUserId();
+        var query = new GetSessionHistoryQuery(userId);
+        var result = await sender.Send(query, ct);
+        return Ok(result);
+    }
+
+    /// <summary>
     /// POST /api/sessions — Start a new game session.
     /// Body: { "gameType": "hangman" }
     /// </summary>

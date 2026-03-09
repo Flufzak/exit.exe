@@ -1,6 +1,7 @@
 using Exit.exe.Application.Features.Games.Queries;
 using Exit.exe.Repository.Auth;
 using Exit.exe.Repository.Data.App;
+using Exit.exe.Web.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -18,6 +19,8 @@ if (builder.Environment.IsDevelopment())
 
 // Controllers register
 services.AddControllers();
+services.AddExceptionHandler<GlobalExceptionHandler>();
+services.AddProblemDetails();
 
 // OpenAPI document generation
 services.AddOpenApi(options =>
@@ -151,6 +154,7 @@ services.AddAuthorization();
 var app = builder.Build();
 
 // Middleware pipeline
+app.UseExceptionHandler();
 app.UseHttpsRedirection();
 
 app.UseCors("Spa");         // must be before auth for browser calls

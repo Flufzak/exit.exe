@@ -1,5 +1,5 @@
 using MediatR;
-using Exit.exe.Application.Features.Stories.StoryDtos;
+using Exit.exe.Application.Features.Stories.DTOs;
 
 namespace Exit.exe.Application.Features.Stories.Queries;
 

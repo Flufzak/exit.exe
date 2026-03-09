@@ -1,6 +1,8 @@
 using Exit.exe.Application.Features.Sessions.Commands;
+using Exit.exe.Application.Features.Sessions.Validators;
 using Exit.exe.Domain.Entities;
 using Exit.exe.Repository.Data.App;
+using Exit.exe.Repository.Repositories;
 
 namespace Exit.exe.Application.Tests;
 
@@ -42,7 +44,7 @@ public class SubmitGuessCommandHandlerTests
     {
         using var db = TestDbContextFactory.Create();
         var (sessionId, _) = SeedSession(db);
-        var handler = new SubmitGuessCommandHandler(db);
+        var handler = new SubmitGuessCommandHandler(new SessionRepository(db));
 
         var result = await handler.Handle(
             new SubmitGuessCommand(sessionId, "T", UserId), CancellationToken.None);
@@ -58,7 +60,7 @@ public class SubmitGuessCommandHandlerTests
     {
         using var db = TestDbContextFactory.Create();
         var (sessionId, _) = SeedSession(db);
-        var handler = new SubmitGuessCommandHandler(db);
+        var handler = new SubmitGuessCommandHandler(new SessionRepository(db));
 
         var result = await handler.Handle(
             new SubmitGuessCommand(sessionId, "X", UserId), CancellationToken.None);
@@ -73,7 +75,7 @@ public class SubmitGuessCommandHandlerTests
     {
         using var db = TestDbContextFactory.Create();
         var (sessionId, _) = SeedSession(db, word: "AB", guessedLetters: "A");
-        var handler = new SubmitGuessCommandHandler(db);
+        var handler = new SubmitGuessCommandHandler(new SessionRepository(db));
 
         var result = await handler.Handle(
             new SubmitGuessCommand(sessionId, "B", UserId), CancellationToken.None);
@@ -88,7 +90,7 @@ public class SubmitGuessCommandHandlerTests
     {
         using var db = TestDbContextFactory.Create();
         var (sessionId, _) = SeedSession(db, attemptsLeft: 1);
-        var handler = new SubmitGuessCommandHandler(db);
+        var handler = new SubmitGuessCommandHandler(new SessionRepository(db));
 
         var result = await handler.Handle(
             new SubmitGuessCommand(sessionId, "X", UserId), CancellationToken.None);
@@ -103,7 +105,7 @@ public class SubmitGuessCommandHandlerTests
     {
         using var db = TestDbContextFactory.Create();
         var (sessionId, _) = SeedSession(db, guessedLetters: "T");
-        var handler = new SubmitGuessCommandHandler(db);
+        var handler = new SubmitGuessCommandHandler(new SessionRepository(db));
 
         await Assert.ThrowsAsync<InvalidOperationException>(
             () => handler.Handle(new SubmitGuessCommand(sessionId, "T", UserId), CancellationToken.None));
@@ -114,21 +116,22 @@ public class SubmitGuessCommandHandlerTests
     {
         using var db = TestDbContextFactory.Create();
         var (sessionId, _) = SeedSession(db, status: SessionStatus.Success);
-        var handler = new SubmitGuessCommandHandler(db);
+        var handler = new SubmitGuessCommandHandler(new SessionRepository(db));
 
         await Assert.ThrowsAsync<InvalidOperationException>(
             () => handler.Handle(new SubmitGuessCommand(sessionId, "A", UserId), CancellationToken.None));
     }
 
     [Fact]
-    public async Task Handle_InvalidLetter_Throws()
+    public async Task Validate_InvalidLetter_Fails()
     {
-        using var db = TestDbContextFactory.Create();
-        var (sessionId, _) = SeedSession(db);
-        var handler = new SubmitGuessCommandHandler(db);
+        var validator = new SubmitGuessCommandValidator();
+        var command = new SubmitGuessCommand(Guid.NewGuid(), "12", UserId);
 
-        await Assert.ThrowsAsync<ArgumentException>(
-            () => handler.Handle(new SubmitGuessCommand(sessionId, "12", UserId), CancellationToken.None));
+        var result = await validator.ValidateAsync(command);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == "Letter");
     }
 
     [Fact]
@@ -136,7 +139,7 @@ public class SubmitGuessCommandHandlerTests
     {
         using var db = TestDbContextFactory.Create();
         var (sessionId, _) = SeedSession(db);
-        var handler = new SubmitGuessCommandHandler(db);
+        var handler = new SubmitGuessCommandHandler(new SessionRepository(db));
 
         await Assert.ThrowsAsync<KeyNotFoundException>(
             () => handler.Handle(new SubmitGuessCommand(sessionId, "A", "other-user"), CancellationToken.None));

@@ -1,4 +1,4 @@
-namespace Exit.exe.Application.Features.Stories.StoryDtos;
+namespace Exit.exe.Application.Features.Stories.DTOs;
 
 public sealed record StoryDto(
     string Id,

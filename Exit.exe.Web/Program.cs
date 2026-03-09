@@ -1,6 +1,11 @@
+using Exit.exe.Application.Behaviors;
+using Exit.exe.Application.Contracts;
 using Exit.exe.Application.Features.Games.Queries;
 using Exit.exe.Repository.Auth;
 using Exit.exe.Repository.Data.App;
+using Exit.exe.Repository.Repositories;
+using Exit.exe.Web.Infrastructure;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -18,6 +23,8 @@ if (builder.Environment.IsDevelopment())
 
 // Controllers register
 services.AddControllers();
+services.AddExceptionHandler<GlobalExceptionHandler>();
+services.AddProblemDetails();
 
 // OpenAPI document generation
 services.AddOpenApi(options =>
@@ -29,7 +36,7 @@ services.AddOpenApi(options =>
         document.Info.Description =
             "Escape-room puzzle game API.\n\n" +
             "\ud83d\udd10 **Cookie-based auth** \u2014 " +
-            "[Login with Google](/api/auth/external/Google?returnUrl=/scalar/v1) " +
+            "[Login with Google](/api/auth/login/google) " +
             "to authenticate, then use *Try it* on protected endpoints.";
 
         return Task.CompletedTask;
@@ -37,9 +44,19 @@ services.AddOpenApi(options =>
 });
 
 // CQRS/MediatR register
-services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssembly(typeof(GetGamesQuery).Assembly));
+var applicationAssembly = typeof(GetGamesQuery).Assembly;
 
+services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(applicationAssembly);
+    cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+});
+
+services.AddValidatorsFromAssembly(applicationAssembly);
+
+// ---- Repositories ----
+services.AddScoped<IPuzzleRepository, PuzzleRepository>();
+services.AddScoped<ISessionRepository, SessionRepository>();
 
 // ---- DB ----
 var conn = config.GetConnectionString("DefaultConnection");
@@ -152,6 +169,7 @@ services.AddAuthorization();
 var app = builder.Build();
 
 // Middleware pipeline
+app.UseExceptionHandler();
 app.UseHttpsRedirection();
 
 app.UseCors("Spa");         // must be before auth for browser calls

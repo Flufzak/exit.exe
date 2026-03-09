@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { request } from "../api/request";
 import { Story } from "../types/story";
+import { t } from "i18next";
 
 export function useStories() {
   const [stories, setStories] = useState<Story[]>([]);
@@ -15,7 +16,7 @@ export function useStories() {
       const data = await request<Story[]>("/api/stories");
       setStories(data);
     } catch {
-      setError("Failed to load stories. Please try again.");
+      setError(t("stories-error", { action: t("try-again") }));
     } finally {
       setLoading(false);
     }

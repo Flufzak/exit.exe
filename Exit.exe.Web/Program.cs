@@ -29,7 +29,7 @@ services.AddOpenApi(options =>
         document.Info.Description =
             "Escape-room puzzle game API.\n\n" +
             "\ud83d\udd10 **Cookie-based auth** \u2014 " +
-            "[Login with Google](/api/auth/external/Google?returnUrl=/scalar/v1) " +
+            "[Login with Google](/api/auth/login/google) " +
             "to authenticate, then use *Try it* on protected endpoints.";
 
         return Task.CompletedTask;

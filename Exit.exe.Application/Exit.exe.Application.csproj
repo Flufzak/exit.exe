@@ -5,7 +5,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Exit.exe.Repository\Exit.exe.Repository.csproj" />
+		<ProjectReference Include="..\Exit.exe.Domain\Exit.exe.Domain.csproj" />
 	</ItemGroup>
 
 </Project>

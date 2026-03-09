@@ -10,4 +10,8 @@
 		<PackageReference Include="MediatR" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<ProjectReference Include="..\Exit.exe.Repository\Exit.exe.Repository.csproj" />
+	</ItemGroup>
+
 </Project>

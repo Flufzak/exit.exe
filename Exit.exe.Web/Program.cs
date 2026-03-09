@@ -46,20 +46,28 @@ services
     .AddDefaultTokenProviders();
 
 // ---- CORS for SPA ----
-var spaOrigins = config.GetSection("Auth:SpaOrigins")
-    .GetChildren()
-    .Select(c => c.Value)
-    .Where(v => !string.IsNullOrWhiteSpace(v))
-    .ToArray();
-
-services.AddCors(o =>
+if (builder.Environment.IsDevelopment())
 {
-    o.AddPolicy("Spa", p =>
+    services.AddCors(o => o.AddPolicy("Spa", p =>
+        p.SetIsOriginAllowed(_ => true)
+         .AllowAnyHeader()
+         .AllowAnyMethod()
+         .AllowCredentials()));
+}
+else
+{
+    var spaOrigins = config.GetSection("Auth:SpaOrigins")
+        .GetChildren()
+        .Select(c => c.Value)
+        .Where(v => !string.IsNullOrWhiteSpace(v))
+        .ToArray();
+
+    services.AddCors(o => o.AddPolicy("Spa", p =>
         p.WithOrigins(spaOrigins!)
          .AllowAnyHeader()
          .AllowAnyMethod()
-         .AllowCredentials());
-});
+         .AllowCredentials()));
+}
 
 // ---- Auth schemes + external providers ----
 services

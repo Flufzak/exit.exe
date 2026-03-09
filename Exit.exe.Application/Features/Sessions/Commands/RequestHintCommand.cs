@@ -8,14 +8,17 @@ namespace Exit.exe.Application.Features.Sessions.Commands;
 
 public sealed record RequestHintCommand(Guid SessionId, string UserId) : IRequest<HintResultDto>;
 
-public sealed class RequestHintCommandHandler(ISessionRepository sessionRepository) : IRequestHandler<RequestHintCommand, HintResultDto>
+public sealed class RequestHintCommandHandler(
+    ISessionRepository sessionRepository) : IRequestHandler<RequestHintCommand, HintResultDto>
 {
     private const int MaxHints = 3;
 
     public async Task<HintResultDto> Handle(RequestHintCommand request, CancellationToken cancellationToken)
     {
-        var session = await sessionRepository.GetWithPuzzleAsync(request.SessionId, request.UserId, cancellationToken)
+        var data = await sessionRepository.GetWithPuzzleAsync(request.SessionId, request.UserId, cancellationToken)
             ?? throw new KeyNotFoundException($"Session '{request.SessionId}' not found.");
+
+        var session = data.Session;
 
         if (session.Status != SessionStatus.InProgress)
             throw new InvalidOperationException("This session has already ended.");
@@ -23,7 +26,7 @@ public sealed class RequestHintCommandHandler(ISessionRepository sessionReposito
         if (session.HintsUsed >= MaxHints)
             throw new InvalidOperationException("Maximum number of hints reached.");
 
-        var payload = JsonSerializer.Deserialize<HangmanPayload>(session.Puzzle.Payload)
+        var payload = JsonSerializer.Deserialize<HangmanPayload>(data.PuzzlePayload)
             ?? throw new InvalidOperationException("Invalid puzzle payload.");
 
         var guessedLetters = HangmanHelper.ParseGuessedLetters(session.GuessedLetters);

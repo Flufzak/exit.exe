@@ -13,7 +13,8 @@ namespace Exit.exe.Web.Controllers;
 public sealed class AuthController(
     SignInManager<ApplicationUser> signInManager,
     UserManager<ApplicationUser> userManager,
-    IConfiguration config) : ControllerBase
+    IConfiguration config,
+    IAuthenticationSchemeProvider schemeProvider) : ControllerBase
 {
     private static readonly HashSet<string> SupportedProviders =
         new(StringComparer.OrdinalIgnoreCase) { "Google" };
@@ -22,10 +23,14 @@ public sealed class AuthController(
     // GET /api/auth/external/{provider}?returnUrl=...
     [HttpGet("external/{provider}")]
     [AllowAnonymous]
-    public IActionResult External([FromRoute] string provider, [FromQuery] string? returnUrl = null)
+    public async Task<IActionResult> External([FromRoute] string provider, [FromQuery] string? returnUrl = null)
     {
         if (!SupportedProviders.Contains(provider))
             return BadRequest(new { error = "Unsupported provider. Use Google or Microsoft." });
+
+        var scheme = await schemeProvider.GetSchemeAsync(provider);
+        if (scheme is null)
+            return BadRequest(new { error = $"Provider '{provider}' is not configured. Set Google credentials via user-secrets." });
 
         var redirectUrl = Url.Action(nameof(ExternalCallback), "Auth", new { provider, returnUrl });
         if (string.IsNullOrWhiteSpace(redirectUrl))

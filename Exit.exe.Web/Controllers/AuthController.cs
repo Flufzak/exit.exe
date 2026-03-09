@@ -41,15 +41,15 @@ public sealed class AuthController(
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
             var user = string.IsNullOrWhiteSpace(email) ? null : await userManager.FindByEmailAsync(email);
 
-            user ??= new ApplicationUser
+            if (user is null)
             {
-                UserName = email ?? $"{info.LoginProvider}_{info.ProviderKey}",
-                Email = email,
-                EmailConfirmed = !string.IsNullOrWhiteSpace(email)
-            };
+                user = new ApplicationUser
+                {
+                    UserName = email ?? $"{info.LoginProvider}_{info.ProviderKey}",
+                    Email = email,
+                    EmailConfirmed = !string.IsNullOrWhiteSpace(email)
+                };
 
-            if (string.IsNullOrWhiteSpace(user.Id))
-            {
                 var created = await userManager.CreateAsync(user);
                 if (!created.Succeeded)
                     return Redirect(returnUrl);

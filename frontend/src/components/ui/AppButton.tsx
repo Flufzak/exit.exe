@@ -26,7 +26,7 @@ export default function AppButton({
           justify-content: center;
 
           padding: 0.7rem 1.4rem;
-          border-radius: 10px;
+          border-radius: 3px;
 
           font-size: 0.95rem;
           font-weight: 600;

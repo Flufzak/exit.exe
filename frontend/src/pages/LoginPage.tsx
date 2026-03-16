@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import "../styles/login.css";
 import AppButton from "../components/ui/AppButton";
 
@@ -24,33 +25,71 @@ function FacebookIcon() {
 }
 
 export default function Login() {
+  const [logoSrc, setLogoSrc] = useState("/images/logo/darkmodeLogo.png");
+
+  useEffect(() => {
+    const root = document.documentElement;
+
+    const updateLogo = () => {
+      const theme = root.getAttribute("data-theme");
+      const isLight = theme === "light";
+
+      setLogoSrc(
+        isLight
+          ? "/images/logo/lightmodeLogo.png"
+          : "/images/logo/darkmodeLogo.png",
+      );
+    };
+
+    updateLogo();
+
+    const observer = new MutationObserver(() => {
+      updateLogo();
+    });
+
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   function onProvider(provider: "google" | "facebook") {
     alert(`Continue with ${provider} (frontend only)`);
   }
 
   return (
     <div className="login-page">
-      <div className="login-bg" aria-hidden="true" />
-
       <main className="login-main">
         <section className="login-hero" aria-label="Authentication">
-          <div className="hero-logo" aria-hidden="true">
-            exit.exe
+          <div className="hero-logo-wrap" aria-hidden="true">
+            <img src={logoSrc} alt="" className="hero-logo-image" />
           </div>
 
           <div className="auth-card">
             <div className="auth-card-glow" aria-hidden="true" />
 
+            <div className="auth-head">
+              <h1 className="auth-title">Log in</h1>
+            </div>
+
             <div className="provider-row">
               <AppButton variant="primary" onClick={() => onProvider("google")}>
-                <GoogleIcon /> Continue with Google
+                <span className="button-content">
+                  <GoogleIcon />
+                  <span>Continue with Google</span>
+                </span>
               </AppButton>
-              <p></p>
+
               <AppButton
                 variant="primary"
                 onClick={() => onProvider("facebook")}
               >
-                <FacebookIcon /> Continue with Facebook
+                <span className="button-content">
+                  <FacebookIcon />
+                  <span>Continue with Facebook</span>
+                </span>
               </AppButton>
             </div>
           </div>

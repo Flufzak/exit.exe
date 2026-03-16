@@ -12,6 +12,7 @@ export default {
   "view-all": "View all",
   upcoming: "Upcoming",
 
+  //stories
   "story-kazimir-title": "Kazimir",
   "story-kazimir-description":
     "Bound in the depths of a forgotten monastery, you are chosen for a ritual that promises immortality. The priests believe destiny has led you here. Prove them wrong.",
@@ -25,5 +26,6 @@ export default {
   "duration-minutes": "{{minutes}} min",
   "tag-new-chapter": "New Chapter",
   "tag-featured-story": "Featured Story",
+
   loading: "Loading",
 };

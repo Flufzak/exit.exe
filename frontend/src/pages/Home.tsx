@@ -47,5 +47,6 @@ const HomeStyles = createGlobalStyle`
   .hero h1, p {
     position: relative;
     z-index: 2;
+    color: #e5e7eb; 
   }
 `;

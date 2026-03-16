@@ -5,6 +5,7 @@ export default function StoriesPage() {
   return (
     <div>
       <h1>{t("all-stories")}</h1>
+      <hr />
       <StoriesSection />
     </div>
   );

@@ -32,28 +32,6 @@ export default function Login() {
     <div className="login-page">
       <div className="login-bg" aria-hidden="true" />
 
-      <header className="login-header">
-        <div className="login-header-inner">
-          <a className="brand" href="/">
-            <span className="brand-mark" aria-hidden="true">
-              ◼
-            </span>
-            <span className="brand-text">EXIT.EXE</span>
-          </a>
-          <nav className="login-nav">
-            <a className="nav-link" href="#">
-              Docs
-            </a>
-            <a className="nav-link" href="#">
-              Status
-            </a>
-            <a className="nav-link" href="#">
-              Support
-            </a>
-          </nav>
-        </div>
-      </header>
-
       <main className="login-main">
         <section className="login-hero" aria-label="Authentication">
           <div className="hero-logo" aria-hidden="true">
@@ -63,48 +41,21 @@ export default function Login() {
           <div className="auth-card">
             <div className="auth-card-glow" aria-hidden="true" />
 
-            <div className="auth-head">
-              <h1 className="auth-title">SYSTEM ACCESS</h1>
-            </div>
-
             <div className="provider-row">
-              <AppButton
-                variant="secondary"
-                onClick={() => onProvider("google")}
-              >
+              <AppButton variant="primary" onClick={() => onProvider("google")}>
                 <GoogleIcon /> Continue with Google
               </AppButton>
+              <p></p>
               <AppButton
-                variant="secondary"
+                variant="primary"
                 onClick={() => onProvider("facebook")}
               >
                 <FacebookIcon /> Continue with Facebook
               </AppButton>
             </div>
           </div>
-
-          <p className="mystery-line">
-            SESSION LOCKED. IDENTIFY YOURSELF TO ENTER THE ARCHIVE.
-          </p>
         </section>
       </main>
-
-      <footer className="login-footer">
-        <div className="footer-inner">
-          <span className="footer-left">EXIT.EXE</span>
-          <div className="footer-center">
-            <a href="#" className="footer-link">
-              Privacy Policy
-            </a>
-            <a href="#" className="footer-link">
-              Terms of Service
-            </a>
-          </div>
-          <span className="footer-right">
-            © {new Date().getFullYear()} GRID ARCHIVE
-          </span>
-        </div>
-      </footer>
     </div>
   );
 }

@@ -5,6 +5,7 @@ type AppButtonProps = {
   variant?: "primary" | "secondary";
   onClick?: () => void;
   type?: "button" | "submit";
+  disabled?: boolean;
 };
 
 export default function AppButton({
@@ -12,6 +13,7 @@ export default function AppButton({
   variant = "primary",
   onClick,
   type = "button",
+  disabled = false,
 }: AppButtonProps) {
   return (
     <>
@@ -83,8 +85,26 @@ export default function AppButton({
           transform: translateY(0) scale(0.96);
         }
 
-        /* PRIMARY */
+        /* disabled */
+        .app-button:disabled {
+          opacity: 0.65;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+          filter: none;
+        }
+                 
+        .app-button:disabled::before {
+          display: none;
+        }
 
+        .app-button:disabled:hover {
+          transform: none;
+          box-shadow: none;
+          filter: none;
+        }
+
+        /* PRIMARY */
         .app-button-primary {
           background: var(--accent);
           color: #02140e;
@@ -96,7 +116,6 @@ export default function AppButton({
         }
 
         /* SECONDARY */
-
         .app-button-secondary {
           background: var(--surface);
           color: var(--text-primary);
@@ -112,6 +131,7 @@ export default function AppButton({
         className={`app-button app-button-${variant}`}
         onClick={onClick}
         type={type}
+        disabled={disabled}
       >
         <span>{children}</span>
       </button>

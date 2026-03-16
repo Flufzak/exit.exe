@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "../styles/login.css";
 import AppButton from "../components/ui/AppButton";
+import { useAuth } from "../hooks/useAuth";
 
 function GoogleIcon() {
   return (
@@ -26,6 +27,7 @@ function FacebookIcon() {
 
 export default function Login() {
   const [logoSrc, setLogoSrc] = useState("/images/logo/darkmodeLogo.png");
+  const { loginWithGoogle, loading } = useAuth();
 
   useEffect(() => {
     const root = document.documentElement;
@@ -75,10 +77,10 @@ export default function Login() {
             </div>
 
             <div className="provider-row">
-              <AppButton variant="primary" onClick={() => onProvider("google")}>
+              <AppButton variant="primary" onClick={loginWithGoogle}>
                 <span className="button-content">
                   <GoogleIcon />
-                  <span>Continue with Google</span>
+                  <span>{loading ? "Loading..." : "Continue with Google"}</span>
                 </span>
               </AppButton>
 

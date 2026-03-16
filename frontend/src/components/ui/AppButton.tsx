@@ -1,10 +1,11 @@
 import React from "react";
 
 type AppButtonProps = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   variant?: "primary" | "secondary";
   onClick?: () => void;
   type?: "button" | "submit";
+  href?: string;
 };
 
 export default function AppButton({
@@ -12,7 +13,9 @@ export default function AppButton({
   variant = "primary",
   onClick,
   type = "button",
+  href,
 }: AppButtonProps) {
+  const content = <span>{children}</span>;
   return (
     <>
       <style>
@@ -99,7 +102,7 @@ export default function AppButton({
 
         .app-button-secondary {
           background: var(--surface);
-          color: var(--text-primary);
+          color: var(--text-secondary);
         }
 
         .app-button-secondary:hover {
@@ -108,13 +111,19 @@ export default function AppButton({
         `}
       </style>
 
-      <button
-        className={`app-button app-button-${variant}`}
-        onClick={onClick}
-        type={type}
-      >
-        <span>{children}</span>
-      </button>
+      {href ? (
+        <a href={href} className={`app-button app-button-${variant}`}>
+          {content}
+        </a>
+      ) : (
+        <button
+          className={`app-button app-button-${variant}`}
+          onClick={onClick}
+          type={type}
+        >
+          {content}
+        </button>
+      )}
     </>
   );
 }

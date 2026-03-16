@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import styled from "styled-components";
 
 const Loader = () => {
@@ -19,7 +20,7 @@ const Loader = () => {
         </svg>
         <div className="box" />
         <p className="loading-text">
-          Loading
+          {t("loading")}
           <span className="dots" />
         </p>
       </div>

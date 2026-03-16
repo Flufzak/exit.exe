@@ -1,24 +1,24 @@
 using System.Text.Json;
+using Exit.exe.Application.Contracts;
 using Exit.exe.Application.Features.Sessions.DTOs;
 using Exit.exe.Domain.Entities;
-using Exit.exe.Repository.Data.App;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Exit.exe.Application.Features.Sessions.Commands;
 
 public sealed record RequestHintCommand(Guid SessionId, string UserId) : IRequest<HintResultDto>;
 
-public sealed class RequestHintCommandHandler(AppDbContext db) : IRequestHandler<RequestHintCommand, HintResultDto>
+public sealed class RequestHintCommandHandler(
+    ISessionRepository sessionRepository) : IRequestHandler<RequestHintCommand, HintResultDto>
 {
     private const int MaxHints = 3;
 
     public async Task<HintResultDto> Handle(RequestHintCommand request, CancellationToken cancellationToken)
     {
-        var session = await db.GameSessions
-            .Include(s => s.Puzzle)
-            .FirstOrDefaultAsync(s => s.Id == request.SessionId && s.UserId == request.UserId, cancellationToken)
+        var data = await sessionRepository.GetWithPuzzleAsync(request.SessionId, request.UserId, cancellationToken)
             ?? throw new KeyNotFoundException($"Session '{request.SessionId}' not found.");
+
+        var session = data.Session;
 
         if (session.Status != SessionStatus.InProgress)
             throw new InvalidOperationException("This session has already ended.");
@@ -26,7 +26,7 @@ public sealed class RequestHintCommandHandler(AppDbContext db) : IRequestHandler
         if (session.HintsUsed >= MaxHints)
             throw new InvalidOperationException("Maximum number of hints reached.");
 
-        var payload = JsonSerializer.Deserialize<HangmanPayload>(session.Puzzle.Payload)
+        var payload = JsonSerializer.Deserialize<HangmanPayload>(data.PuzzlePayload)
             ?? throw new InvalidOperationException("Invalid puzzle payload.");
 
         var guessedLetters = HangmanHelper.ParseGuessedLetters(session.GuessedLetters);
@@ -35,7 +35,7 @@ public sealed class RequestHintCommandHandler(AppDbContext db) : IRequestHandler
         var hint = GenerateSeedHint(payload, guessedLetters, session.HintsUsed);
 
         session.HintsUsed++;
-        await db.SaveChangesAsync(cancellationToken);
+        await sessionRepository.SaveChangesAsync(cancellationToken);
 
         return new HintResultDto(hint, session.HintsUsed);
     }

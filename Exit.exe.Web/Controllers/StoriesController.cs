@@ -1,24 +1,17 @@
+using Exit.exe.Application.Features.Stories.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Exit.exe.Application.Features.Stories.Queries;
 
 namespace Exit.exe.Web.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class StoriesController : ControllerBase
+[Route("api/stories")]
+public sealed class StoriesController(ISender sender) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public StoriesController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get(CancellationToken ct)
     {
-        var stories = await _mediator.Send(new GetStoriesQuery());
-        return Ok(stories);
+        var result = await sender.Send(new GetStoriesQuery(), ct);
+        return Ok(result);
     }
 }

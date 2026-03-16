@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="FluentValidation" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
@@ -17,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Exit.exe.Application\Exit.exe.Application.csproj" />
+    <ProjectReference Include="..\Exit.exe.Repository\Exit.exe.Repository.csproj" />
   </ItemGroup>
 
   <ItemGroup>

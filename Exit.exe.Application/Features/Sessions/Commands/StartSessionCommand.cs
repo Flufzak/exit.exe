@@ -1,22 +1,21 @@
 using System.Text.Json;
+using Exit.exe.Application.Contracts;
 using Exit.exe.Application.Features.Sessions.DTOs;
 using Exit.exe.Domain.Entities;
-using Exit.exe.Repository.Data.App;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Exit.exe.Application.Features.Sessions.Commands;
 
 public sealed record StartSessionCommand(string GameType, string UserId) : IRequest<SessionDto>;
 
-public sealed class StartSessionCommandHandler(AppDbContext db) : IRequestHandler<StartSessionCommand, SessionDto>
+public sealed class StartSessionCommandHandler(
+    IPuzzleRepository puzzleRepository,
+    ISessionRepository sessionRepository) : IRequestHandler<StartSessionCommand, SessionDto>
 {
     public async Task<SessionDto> Handle(StartSessionCommand request, CancellationToken cancellationToken)
     {
         // Pick a random puzzle of the requested game type
-        var puzzles = await db.Puzzles
-            .Where(p => p.GameType == request.GameType)
-            .ToListAsync(cancellationToken);
+        var puzzles = await puzzleRepository.GetByGameTypeAsync(request.GameType, cancellationToken);
 
         if (puzzles.Count == 0)
             throw new InvalidOperationException($"No puzzles found for game type '{request.GameType}'.");
@@ -38,8 +37,8 @@ public sealed class StartSessionCommandHandler(AppDbContext db) : IRequestHandle
             StartedAtUtc = DateTime.UtcNow
         };
 
-        db.GameSessions.Add(session);
-        await db.SaveChangesAsync(cancellationToken);
+        sessionRepository.Add(session);
+        await sessionRepository.SaveChangesAsync(cancellationToken);
 
         var maskedWord = HangmanHelper.MaskWord(payload.Word, []);
 

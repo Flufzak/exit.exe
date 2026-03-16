@@ -9,9 +9,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Exit.exe.Domain\Exit.exe.Domain.csproj" />
+		<ProjectReference Include="..\Exit.exe.Application\Exit.exe.Application.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Data\App\Entities\" />
-	</ItemGroup>
-</Project>
+	</Project>

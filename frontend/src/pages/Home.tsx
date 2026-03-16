@@ -1,16 +1,14 @@
 import { createGlobalStyle } from "styled-components";
 import StoriesSection from "../components/stories/StoriesSection";
+import { t } from "i18next";
 
 export default function Home() {
   return (
     <>
       <HomeStyles />
       <section className="hero">
-        <h1>Escape the sect dungeons</h1>
-        <p>
-          Solve clever puzzles, uncover hidden clues, and find your way out. A
-          thrilling escape adventure awaits.
-        </p>
+        <h1>{t("escape-the-sect-dungeons")}</h1>
+        <p>{t("solve-puzzles-find-a-way-out")}</p>
       </section>
       <StoriesSection />
     </>

@@ -5,6 +5,9 @@
   <Folder Name="/Application/">
     <Project Path="Exit.exe.Application/Exit.exe.Application.csproj" Id="113e2fc1-f48f-40be-8aa4-7d8899dcfdea" />
   </Folder>
+  <Folder Name="/Domain/">
+    <Project Path="Exit.exe.Domain/Exit.exe.Domain.csproj" />
+  </Folder>
   <Folder Name="/Hosting/">
     <Project Path="Exit.exe.AppHost/Exit.exe.AppHost.csproj" />
   </Folder>
@@ -15,7 +18,8 @@
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
   </Folder>
-  <Project Path="Exit.exe.Application.Tests/Exit.exe.Application.Tests.csproj" />
-  <Project Path="Exit.exe.Domain.Tests/Exit.exe.Domain.Tests.csproj" />
-  <Project Path="Exit.exe.Domain/Exit.exe.Domain.csproj" />
+  <Folder Name="/Tests/">
+    <Project Path="Exit.exe.Application.Tests/Exit.exe.Application.Tests.csproj" />
+    <Project Path="Exit.exe.Domain.Tests/Exit.exe.Domain.Tests.csproj" />
+  </Folder>
 </Solution>

@@ -12,6 +12,7 @@ export default {
   "view-all": "Alles bekijken",
   upcoming: "Binnenkort",
 
+  //verhalen
   "story-kazimir-title": "Kazimir",
   "story-kazimir-description":
     "Gebonden in de dieptes van een vergeten klooster word je gekozen voor een ritueel dat onsterfelijkheid belooft. De priesters geloven dat het lot je hierheen heeft geleid. Bewijs dat ze ongelijk hebben.",
@@ -25,5 +26,6 @@ export default {
   "duration-minutes": "{{minutes}} min",
   "tag-new-chapter": "Nieuw Hoofdstuk",
   "tag-featured-story": "Uitgelicht Verhaal",
+
   loading: "Laden",
 };

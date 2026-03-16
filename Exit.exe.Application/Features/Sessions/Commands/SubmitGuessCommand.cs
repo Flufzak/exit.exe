@@ -8,17 +8,20 @@ namespace Exit.exe.Application.Features.Sessions.Commands;
 
 public sealed record SubmitGuessCommand(Guid SessionId, string Letter, string UserId) : IRequest<GuessResultDto>;
 
-public sealed class SubmitGuessCommandHandler(ISessionRepository sessionRepository) : IRequestHandler<SubmitGuessCommand, GuessResultDto>
+public sealed class SubmitGuessCommandHandler(
+    ISessionRepository sessionRepository) : IRequestHandler<SubmitGuessCommand, GuessResultDto>
 {
     public async Task<GuessResultDto> Handle(SubmitGuessCommand request, CancellationToken cancellationToken)
     {
-        var session = await sessionRepository.GetWithPuzzleAsync(request.SessionId, request.UserId, cancellationToken)
+        var data = await sessionRepository.GetWithPuzzleAsync(request.SessionId, request.UserId, cancellationToken)
             ?? throw new KeyNotFoundException($"Session '{request.SessionId}' not found.");
+
+        var session = data.Session;
 
         if (session.Status != SessionStatus.InProgress)
             throw new InvalidOperationException("This session has already ended.");
 
-        var payload = JsonSerializer.Deserialize<HangmanPayload>(session.Puzzle.Payload)
+        var payload = JsonSerializer.Deserialize<HangmanPayload>(data.PuzzlePayload)
             ?? throw new InvalidOperationException("Invalid puzzle payload.");
 
         var letter = request.Letter.ToUpperInvariant();

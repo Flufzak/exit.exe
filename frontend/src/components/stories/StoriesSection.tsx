@@ -63,7 +63,7 @@ export default function StoriesSection() {
 }
 
 const Section = styled.section`
-  margin-top: 3rem;
+  margin-top: 1.5rem;
 `;
 
 const Header = styled.div`
@@ -75,7 +75,7 @@ const Header = styled.div`
 `;
 
 const SubHeader = styled.div`
-  margin-top: 2rem;
+  margin-top: 1rem;
   margin-bottom: 0.8rem;
   color: var(--text-primary);
 `;

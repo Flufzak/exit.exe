@@ -28,4 +28,8 @@ export default {
   "tag-featured-story": "Uitgelicht Verhaal",
 
   loading: "Laden",
+  "log-in": "Inloggen",
+  "log-out": "Uitloggen",
+  stories: "Verhalen",
+  profile: "Profiel",
 };

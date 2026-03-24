@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "../styles/login.css";
 import AppButton from "../components/ui/AppButton";
 import { useAuth } from "../hooks/useAuth";
+import Loader from "../components/ui/Loader";
 
 function GoogleIcon() {
   return (
@@ -27,7 +28,7 @@ function FacebookIcon() {
 
 export default function Login() {
   const [logoSrc, setLogoSrc] = useState("/images/logo/darkmodeLogo.png");
-  const { loginWithGoogle, loading } = useAuth();
+  const { loginWithGoogle, loginWithFacebook, loading } = useAuth();
 
   useEffect(() => {
     const root = document.documentElement;
@@ -57,46 +58,39 @@ export default function Login() {
     return () => observer.disconnect();
   }, []);
 
-  function onProvider(provider: "google" | "facebook") {
-    alert(`Continue with ${provider} (frontend only)`);
-  }
+  if (loading) return <Loader />;
 
   return (
-    <div className="login-page">
-      <main className="login-main">
-        <section className="login-hero" aria-label="Authentication">
-          <div className="hero-logo-wrap" aria-hidden="true">
-            <img src={logoSrc} alt="" className="hero-logo-image" />
+    <main className="login-main">
+      <section className="login-hero" aria-label="Authentication">
+        <div className="hero-logo-wrap" aria-hidden="true">
+          <img src={logoSrc} alt="" className="hero-logo-image" />
+        </div>
+
+        <div className="auth-card">
+          <div aria-hidden="true" />
+
+          <div className="auth-head">
+            <h1 className="auth-title">Log in</h1>
           </div>
 
-          <div className="auth-card">
-            <div className="auth-card-glow" aria-hidden="true" />
+          <div className="provider-row">
+            <AppButton variant="primary" onClick={loginWithGoogle}>
+              <span className="button-content">
+                <GoogleIcon />
+                <span>Continue with Google</span>
+              </span>
+            </AppButton>
 
-            <div className="auth-head">
-              <h1 className="auth-title">Log in</h1>
-            </div>
-
-            <div className="provider-row">
-              <AppButton variant="primary" onClick={loginWithGoogle}>
-                <span className="button-content">
-                  <GoogleIcon />
-                  <span>{loading ? "Loading..." : "Continue with Google"}</span>
-                </span>
-              </AppButton>
-
-              <AppButton
-                variant="primary"
-                onClick={() => onProvider("facebook")}
-              >
-                <span className="button-content">
-                  <FacebookIcon />
-                  <span>Continue with Facebook</span>
-                </span>
-              </AppButton>
-            </div>
+            <AppButton variant="primary" onClick={loginWithFacebook}>
+              <span className="button-content">
+                <FacebookIcon />
+                <span>Continue with Facebook</span>
+              </span>
+            </AppButton>
           </div>
-        </section>
-      </main>
-    </div>
+        </div>
+      </section>
+    </main>
   );
 }

@@ -14,6 +14,8 @@ export default function AppButton({
   variant = "primary",
   onClick,
   type = "button",
+  disabled,
+  href,
 }: AppButtonProps) {
   const content = <span>{children}</span>;
   return (
@@ -28,7 +30,7 @@ export default function AppButton({
           align-items: center;
           justify-content: center;
 
-          padding: 0.7rem 1.4rem;
+          padding: 0.6rem 0.7rem;
           border-radius: 3px;
 
           font-size: 0.95rem;

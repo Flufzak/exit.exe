@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { request } from "../api/request";
 import { Story } from "../types/story";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 export function useStories() {
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const { t } = useTranslation();
 
   async function fetchStories() {
     setLoading(true);

@@ -4,11 +4,12 @@ import StoryCard from "./StoryCard";
 import { useStories } from "../../hooks/useStories";
 import Loader from "../ui/Loader";
 import Error from "../ui/Error";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 export default function StoriesSection() {
   const { stories, loading, error, refetch } = useStories();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const isHome = location.pathname === "/";
 

@@ -1,8 +1,10 @@
 import { createGlobalStyle } from "styled-components";
 import StoriesSection from "../components/stories/StoriesSection";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 export default function Home() {
+  const { t } = useTranslation();
+
   return (
     <>
       <HomeStyles />

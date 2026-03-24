@@ -2,12 +2,14 @@ import styled from "styled-components";
 import { useAuth } from "../hooks/useAuth";
 import { request } from "../api/request";
 import AppButton from "./ui/AppButton";
-import { t } from "i18next";
 import { Link, NavLink } from "react-router-dom";
 import ThemeSwitch from "./ui/ThemeSwitch";
+import LanguageSwitch from "./ui/LanguageSwitch";
+import { useTranslation } from "react-i18next";
 
 export default function Header() {
   const { isAuthenticated, loading, refetch } = useAuth();
+  const { t } = useTranslation();
 
   async function handleLogout() {
     await request("/api/auth/logout", { method: "POST" });
@@ -15,12 +17,13 @@ export default function Header() {
   }
 
   if (loading) return null;
-
+  // niet responsive
   return (
     <Container>
       <Left>
         <Link to="/">
-          <Logo src="/images/logo/darkmodeLogo.png" alt="Exit.exe" />
+          <LogoDark src="/images/logo/darkmodeLogo.png" alt="Exit.exe" />
+          <LogoLight src="/images/logo/lightmodeLogo.png" alt="Exit.exe" />
         </Link>
       </Left>
 
@@ -39,6 +42,7 @@ export default function Header() {
 
         <Actions>
           <ThemeSwitch />
+          <LanguageSwitch />
         </Actions>
 
         {!isAuthenticated && (
@@ -74,8 +78,21 @@ const Left = styled.div`
   gap: 32px;
 `;
 
-const Logo = styled.img`
+const LogoDark = styled.img`
   height: 12rem;
+
+  html[data-theme="light"] & {
+    display: none;
+  }
+`;
+
+const LogoLight = styled.img`
+  height: 12rem;
+  display: none;
+
+  html[data-theme="light"] & {
+    display: block;
+  }
 `;
 
 const Nav = styled.nav`

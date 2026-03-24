@@ -3,6 +3,7 @@ import "../styles/login.css";
 import AppButton from "../components/ui/AppButton";
 import { useAuth } from "../hooks/useAuth";
 import Loader from "../components/ui/Loader";
+import { useTranslation } from "react-i18next";
 
 function GoogleIcon() {
   return (
@@ -29,6 +30,7 @@ function FacebookIcon() {
 export default function Login() {
   const [logoSrc, setLogoSrc] = useState("/images/logo/darkmodeLogo.png");
   const { loginWithGoogle, loginWithFacebook, loading } = useAuth();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const root = document.documentElement;
@@ -71,21 +73,21 @@ export default function Login() {
           <div aria-hidden="true" />
 
           <div className="auth-head">
-            <h1 className="auth-title">Log in</h1>
+            <h1 className="auth-title">{t("log-in")}</h1>
           </div>
 
           <div className="provider-row">
             <AppButton variant="primary" onClick={loginWithGoogle}>
               <span className="button-content">
                 <GoogleIcon />
-                <span>Continue with Google</span>
+                <span>{t("continue-google")}</span>
               </span>
             </AppButton>
 
             <AppButton variant="primary" onClick={loginWithFacebook}>
               <span className="button-content">
                 <FacebookIcon />
-                <span>Continue with Facebook</span>
+                <span>{t("continue-facebook")}</span>
               </span>
             </AppButton>
           </div>

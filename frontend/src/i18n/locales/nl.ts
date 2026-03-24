@@ -32,4 +32,6 @@ export default {
   "log-out": "Uitloggen",
   stories: "Verhalen",
   profile: "Profiel",
+  "continue-google": "Ga door met Google",
+  "continue-facebook": "Ga door met Facebook",
 };

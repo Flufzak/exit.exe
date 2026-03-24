@@ -32,4 +32,6 @@ export default {
   "log-out": "Log out",
   stories: "Stories",
   profile: "Profile",
+  "continue-google": "Continue with Google",
+  "continue-facebook": "Continue with Facebook",
 };

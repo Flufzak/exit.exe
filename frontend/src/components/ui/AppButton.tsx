@@ -5,6 +5,7 @@ type AppButtonProps = {
   variant?: "primary" | "secondary";
   onClick?: () => void;
   type?: "button" | "submit";
+  disabled?: boolean;
   href?: string;
 };
 
@@ -13,7 +14,6 @@ export default function AppButton({
   variant = "primary",
   onClick,
   type = "button",
-  href,
 }: AppButtonProps) {
   const content = <span>{children}</span>;
   return (
@@ -29,7 +29,7 @@ export default function AppButton({
           justify-content: center;
 
           padding: 0.7rem 1.4rem;
-          border-radius: 10px;
+          border-radius: 3px;
 
           font-size: 0.95rem;
           font-weight: 600;
@@ -86,8 +86,26 @@ export default function AppButton({
           transform: translateY(0) scale(0.96);
         }
 
-        /* PRIMARY */
+        /* disabled */
+        .app-button:disabled {
+          opacity: 0.65;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+          filter: none;
+        }
+                 
+        .app-button:disabled::before {
+          display: none;
+        }
 
+        .app-button:disabled:hover {
+          transform: none;
+          box-shadow: none;
+          filter: none;
+        }
+
+        /* PRIMARY */
         .app-button-primary {
           background: var(--accent);
           color: #02140e;
@@ -99,7 +117,6 @@ export default function AppButton({
         }
 
         /* SECONDARY */
-
         .app-button-secondary {
           background: var(--surface);
           color: var(--text-secondary);
@@ -120,6 +137,7 @@ export default function AppButton({
           className={`app-button app-button-${variant}`}
           onClick={onClick}
           type={type}
+          disabled={disabled}
         >
           {content}
         </button>

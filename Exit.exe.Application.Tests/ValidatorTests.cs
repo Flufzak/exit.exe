@@ -1,4 +1,5 @@
 using Exit.exe.Application.Features.Sessions.Commands;
+using Exit.exe.Application.Features.Sessions.Queries;
 using Exit.exe.Application.Features.Sessions.Validators;
 
 namespace Exit.exe.Application.Tests;
@@ -94,5 +95,54 @@ public class ValidatorTests
         var result = await validator.ValidateAsync(command);
 
         Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public async Task GetSessionHistory_ValidQuery_Passes()
+    {
+        var validator = new GetSessionHistoryQueryValidator();
+        var query = new GetSessionHistoryQuery("user-1", Limit: 50, Offset: 0);
+
+        var result = await validator.ValidateAsync(query);
+
+        Assert.True(result.IsValid);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public async Task GetSessionHistory_LimitLessThanOrEqualToZero_Fails(int limit)
+    {
+        var validator = new GetSessionHistoryQueryValidator();
+        var query = new GetSessionHistoryQuery("user-1", Limit: limit, Offset: 0);
+
+        var result = await validator.ValidateAsync(query);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == "Limit");
+    }
+
+    [Fact]
+    public async Task GetSessionHistory_LimitExceedsMax_Fails()
+    {
+        var validator = new GetSessionHistoryQueryValidator();
+        var query = new GetSessionHistoryQuery("user-1", Limit: 101, Offset: 0);
+
+        var result = await validator.ValidateAsync(query);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == "Limit");
+    }
+
+    [Fact]
+    public async Task GetSessionHistory_NegativeOffset_Fails()
+    {
+        var validator = new GetSessionHistoryQueryValidator();
+        var query = new GetSessionHistoryQuery("user-1", Limit: 10, Offset: -1);
+
+        var result = await validator.ValidateAsync(query);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == "Offset");
     }
 }

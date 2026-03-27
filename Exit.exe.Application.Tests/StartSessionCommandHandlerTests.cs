@@ -22,7 +22,7 @@ public class StartSessionCommandHandlerTests
         await db.SaveChangesAsync();
 
         var handler = new StartSessionCommandHandler(
-            new PuzzleRepository(db), new SessionRepository(db));
+            new PuzzleRepository(db), new SessionRepository(db), new AlwaysFallbackAiService());
         var command = new StartSessionCommand("hangman-test", "user-1");
 
         // Act
@@ -41,7 +41,7 @@ public class StartSessionCommandHandlerTests
     {
         using var db = TestDbContextFactory.Create();
         var handler = new StartSessionCommandHandler(
-            new PuzzleRepository(db), new SessionRepository(db));
+            new PuzzleRepository(db), new SessionRepository(db), new AlwaysFallbackAiService());
         var command = new StartSessionCommand("unknown", "user-1");
 
         await Assert.ThrowsAsync<InvalidOperationException>(

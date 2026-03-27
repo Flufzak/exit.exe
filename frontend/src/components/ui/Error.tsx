@@ -1,4 +1,4 @@
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 
 interface ErrorProps {
@@ -7,6 +7,8 @@ interface ErrorProps {
 }
 
 export default function Error({ message, onReload }: ErrorProps) {
+  const { t } = useTranslation();
+
   return (
     <Wrapper>
       <Box>

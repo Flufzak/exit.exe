@@ -17,10 +17,13 @@ public sealed class SessionsController(ISender sender) : ControllerBase
     /// GET /api/sessions — Get session history for the current user.
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<SessionSummaryDto>>> History(CancellationToken ct)
+    public async Task<ActionResult<IReadOnlyList<SessionSummaryDto>>> History(
+        [FromQuery] int limit = 50,
+        [FromQuery] int offset = 0,
+        CancellationToken ct = default)
     {
         var userId = GetUserId();
-        var query = new GetSessionHistoryQuery(userId);
+        var query = new GetSessionHistoryQuery(userId, limit, offset);
         var result = await sender.Send(query, ct);
         return Ok(result);
     }

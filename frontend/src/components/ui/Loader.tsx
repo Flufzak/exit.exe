@@ -1,7 +1,9 @@
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 
 const Loader = () => {
+  const { t } = useTranslation();
+
   return (
     <StyledWrapper>
       <div className="loader">

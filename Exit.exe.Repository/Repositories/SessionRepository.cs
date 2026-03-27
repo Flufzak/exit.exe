@@ -16,11 +16,14 @@ public sealed class SessionRepository(AppDbContext db) : ISessionRepository
             .FirstOrDefaultAsync(ct);
     }
 
-    public async Task<IReadOnlyList<SessionSummaryDto>> GetHistoryByUserAsync(string userId, CancellationToken ct)
+    public async Task<IReadOnlyList<SessionSummaryDto>> GetHistoryByUserAsync(string userId, int limit, int offset, CancellationToken ct)
     {
         return await db.GameSessions
             .Where(s => s.UserId == userId)
             .OrderByDescending(s => s.StartedAtUtc)
+            .ThenByDescending(s => s.Id)
+            .Skip(offset)
+            .Take(limit)
             .Select(s => new SessionSummaryDto(
                 s.Id,
                 s.Puzzle.GameType,
@@ -29,6 +32,14 @@ public sealed class SessionRepository(AppDbContext db) : ISessionRepository
                 s.HintsUsed,
                 s.StartedAtUtc,
                 s.CompletedAtUtc))
+            .ToListAsync(ct);
+    }
+
+    public async Task<IReadOnlyList<GameSession>> GetAllByUserAsync(string userId, CancellationToken ct)
+    {
+        return await db.GameSessions
+            .Where(s => s.UserId == userId)
+            .AsNoTracking()
             .ToListAsync(ct);
     }
 

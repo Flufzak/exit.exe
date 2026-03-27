@@ -4,11 +4,12 @@ import StoryCard from "./StoryCard";
 import { useStories } from "../../hooks/useStories";
 import Loader from "../ui/Loader";
 import Error from "../ui/Error";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 export default function StoriesSection() {
   const { stories, loading, error, refetch } = useStories();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const isHome = location.pathname === "/";
 
@@ -63,7 +64,7 @@ export default function StoriesSection() {
 }
 
 const Section = styled.section`
-  margin-top: 3rem;
+  margin-top: 1.5rem;
 `;
 
 const Header = styled.div`
@@ -75,7 +76,7 @@ const Header = styled.div`
 `;
 
 const SubHeader = styled.div`
-  margin-top: 2rem;
+  margin-top: 1rem;
   margin-bottom: 0.8rem;
   color: var(--text-primary);
 `;

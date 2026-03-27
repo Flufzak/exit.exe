@@ -11,19 +11,19 @@ namespace Exit.exe.Web.Controllers;
 [Route("api/auth")]
 public sealed class AuthController(
     SignInManager<ApplicationUser> signInManager,
-    UserManager<ApplicationUser> userManager) : ControllerBase
+    UserManager<ApplicationUser> userManager,
+    IConfiguration configuration) : ControllerBase
 {
-    private const string DefaultFrontendUrl = "https://localhost:5173";
-    private const string DefaultScalarUrl = "/scalar/v1";
+    private string DefaultReturnUrl => configuration["Auth:DefaultReturnUrl"] ?? "/";
 
+    // GET /api/auth/login/google?returnUrl=...
     [HttpGet("login/google")]
     [AllowAnonymous]
     public IActionResult LoginGoogle([FromQuery] string? returnUrl = null)
     {
-        var safeReturnUrl = GetSafeReturnUrl(returnUrl);
-        var callback = Url.Action(nameof(GoogleCallback), "Auth", new { returnUrl = safeReturnUrl });
-
-        var props = signInManager.ConfigureExternalAuthenticationProperties("Google", callback!);
+        returnUrl ??= DefaultReturnUrl;
+        var callback = Url.Action(nameof(GoogleCallback), "Auth", new { returnUrl });
+        var props = signInManager.ConfigureExternalAuthenticationProperties("Google", callback);
         return Challenge(props, "Google");
     }
 
@@ -32,8 +32,7 @@ public sealed class AuthController(
     [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<IActionResult> GoogleCallback([FromQuery] string? returnUrl = null)
     {
-        var safeReturnUrl = GetSafeReturnUrl(returnUrl);
-
+        returnUrl ??= DefaultReturnUrl;
         var info = await signInManager.GetExternalLoginInfoAsync();
         if (info is null)
             return Redirect(safeReturnUrl);

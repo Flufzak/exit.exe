@@ -13,4 +13,9 @@ public sealed class PuzzleRepository(AppDbContext db) : IPuzzleRepository
             .Where(p => p.GameType == gameType)
             .ToListAsync(ct);
     }
+
+    public void Add(Puzzle puzzle)
+    {
+        db.Puzzles.Add(puzzle);
+    }
 }

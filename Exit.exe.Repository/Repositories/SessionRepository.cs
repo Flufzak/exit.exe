@@ -21,6 +21,7 @@ public sealed class SessionRepository(AppDbContext db) : ISessionRepository
         return await db.GameSessions
             .Where(s => s.UserId == userId)
             .OrderByDescending(s => s.StartedAtUtc)
+            .ThenByDescending(s => s.Id)
             .Skip(offset)
             .Take(limit)
             .Select(s => new SessionSummaryDto(

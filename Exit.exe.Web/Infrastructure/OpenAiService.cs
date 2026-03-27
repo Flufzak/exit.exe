@@ -3,11 +3,20 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Exit.exe.Application.Contracts;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Exit.exe.Web.Infrastructure;
 
-public sealed class OpenAiService(HttpClient httpClient, ILogger<OpenAiService> logger) : IAiService
+public sealed class AiProviderOptions
 {
+    public string BaseUrl { get; set; } = "http://localhost:11434";
+    public string Model { get; set; } = "llama3.2";
+    public string Provider { get; set; } = "ollama";
+}
+
+public sealed class OpenAiService(HttpClient httpClient, IOptions<AiProviderOptions> options, ILogger<OpenAiService> logger) : IAiService
+{
+    private readonly AiProviderOptions _options = options.Value;
     public async Task<AiPuzzleResult?> GenerateHangmanPuzzleAsync(CancellationToken ct)
     {
         var prompt = """
@@ -79,7 +88,7 @@ public sealed class OpenAiService(HttpClient httpClient, ILogger<OpenAiService> 
     {
         var requestBody = new
         {
-            model = "gpt-4o-mini",
+            model = _options.Model,
             messages = new[]
             {
                 new { role = "system", content = "You are a concise game master for a dark escape-room puzzle game." },
@@ -89,12 +98,13 @@ public sealed class OpenAiService(HttpClient httpClient, ILogger<OpenAiService> 
             max_tokens = 200
         };
 
-        var response = await httpClient.PostAsJsonAsync("https://api.openai.com/v1/chat/completions", requestBody, ct);
+        var endpoint = $"{_options.BaseUrl.TrimEnd('/')}/v1/chat/completions";
+        var response = await httpClient.PostAsJsonAsync(endpoint, requestBody, ct);
 
         if (!response.IsSuccessStatusCode)
         {
             var errorBody = await response.Content.ReadAsStringAsync(ct);
-            logger.LogWarning("OpenAI API returned {StatusCode}: {Body}", response.StatusCode, errorBody);
+            logger.LogWarning("{Provider} API returned {StatusCode}: {Body}", _options.Provider, response.StatusCode, errorBody);
             return null;
         }
 

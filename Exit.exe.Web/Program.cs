@@ -115,6 +115,7 @@ services.AddDbContext<AuthDbContext>(opt =>
     {
         sql.MigrationsAssembly(migrationsAssembly);
         sql.MigrationsHistoryTable("__AuthMigrationsHistory");
+        sql.EnableRetryOnFailure();
     }));
 
 services.AddDbContext<AppDbContext>(opt =>
@@ -122,6 +123,7 @@ services.AddDbContext<AppDbContext>(opt =>
     {
         sql.MigrationsAssembly(migrationsAssembly);
         sql.MigrationsHistoryTable("__AppMigrationsHistory");
+        sql.EnableRetryOnFailure();
     }));
 
 // ---- Identity (cookie-based) ----

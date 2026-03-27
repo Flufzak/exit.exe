@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { request } from "../api/request";
 import { Story } from "../types/story";
 import { useTranslation } from "react-i18next";
@@ -8,9 +8,9 @@ export function useStories() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { t } = useTranslation();
+  const { t: translate } = useTranslation();
 
-  async function fetchStories() {
+  const fetchStories = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -18,15 +18,15 @@ export function useStories() {
       const data = await request<Story[]>("/api/stories");
       setStories(data);
     } catch {
-      setError(t("stories-error", { action: t("try-again") }));
+      setError(translate("stories-error", { action: translate("try-again") }));
     } finally {
       setLoading(false);
     }
-  }
+  }, [translate]);
 
   useEffect(() => {
     fetchStories();
-  }, []);
+  }, [fetchStories]);
 
   return { stories, loading, error, refetch: fetchStories };
 }

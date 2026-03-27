@@ -12,6 +12,7 @@ public interface ISessionRepository
 {
     Task<SessionWithPuzzle?> GetWithPuzzleAsync(Guid sessionId, string userId, CancellationToken ct);
     Task<IReadOnlyList<SessionSummaryDto>> GetHistoryByUserAsync(string userId, int limit, int offset, CancellationToken ct);
+    Task<IReadOnlyList<GameSession>> GetAllByUserAsync(string userId, CancellationToken ct);
     void Add(GameSession session);
     Task SaveChangesAsync(CancellationToken ct);
 }

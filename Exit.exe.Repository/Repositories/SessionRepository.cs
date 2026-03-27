@@ -35,6 +35,14 @@ public sealed class SessionRepository(AppDbContext db) : ISessionRepository
             .ToListAsync(ct);
     }
 
+    public async Task<IReadOnlyList<GameSession>> GetAllByUserAsync(string userId, CancellationToken ct)
+    {
+        return await db.GameSessions
+            .Where(s => s.UserId == userId)
+            .AsNoTracking()
+            .ToListAsync(ct);
+    }
+
     public void Add(GameSession session)
     {
         db.GameSessions.Add(session);

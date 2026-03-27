@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Story } from "../../types/story";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 type Props = Story;
 
@@ -11,6 +11,7 @@ const storyImages: Record<string, string> = {
 
 export default function StoryCard({ id, duration, status, type }: Props) {
   const imageUrl = storyImages[id];
+  const { t } = useTranslation();
 
   return (
     <Card $type={type}>

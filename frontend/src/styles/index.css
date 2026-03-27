@@ -37,9 +37,11 @@ html[data-theme="light"] {
   --accent-rgb: 16 185 129;
   --danger: #d94841;
 }
+
 body {
   background: var(--bg);
 }
+
 * {
   margin: 0;
   padding: 0;
@@ -50,6 +52,7 @@ body {
   width: 100%;
   min-height: 100vh;
 }
+
 .header {
   width: 100%;
   padding: 1.5rem 2rem;

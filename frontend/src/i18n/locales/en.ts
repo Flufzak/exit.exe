@@ -28,4 +28,10 @@ export default {
   "tag-featured-story": "Featured Story",
 
   loading: "Loading",
+  "log-in": "Log in",
+  "log-out": "Log out",
+  stories: "Stories",
+  profile: "Profile",
+  "continue-google": "Continue with Google",
+  "continue-facebook": "Continue with Facebook",
 };

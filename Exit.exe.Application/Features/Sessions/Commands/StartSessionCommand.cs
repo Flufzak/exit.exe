@@ -10,19 +10,48 @@ public sealed record StartSessionCommand(string GameType, string UserId) : IRequ
 
 public sealed class StartSessionCommandHandler(
     IPuzzleRepository puzzleRepository,
-    ISessionRepository sessionRepository) : IRequestHandler<StartSessionCommand, SessionDto>
+    ISessionRepository sessionRepository,
+    IAiService aiService) : IRequestHandler<StartSessionCommand, SessionDto>
 {
     public async Task<SessionDto> Handle(StartSessionCommand request, CancellationToken cancellationToken)
     {
-        // Pick a random puzzle of the requested game type
-        var puzzles = await puzzleRepository.GetByGameTypeAsync(request.GameType, cancellationToken);
+        Puzzle puzzle;
 
-        if (puzzles.Count == 0)
-            throw new InvalidOperationException($"No puzzles found for game type '{request.GameType}'.");
+        // Try AI-generated puzzle first, fall back to seed data
+        var aiResult = await aiService.GenerateHangmanPuzzleAsync(cancellationToken);
 
-        var puzzle = puzzles[Random.Shared.Next(puzzles.Count)];
+        if (aiResult is not null)
+        {
+            var payload = new HangmanPayload
+            {
+                Word = aiResult.Word,
+                Description = aiResult.Description,
+                Category = aiResult.Category,
+                MaxAttempts = 6
+            };
 
-        var payload = JsonSerializer.Deserialize<HangmanPayload>(puzzle.Payload)
+            puzzle = new Puzzle
+            {
+                Id = Guid.NewGuid(),
+                GameType = request.GameType,
+                Payload = JsonSerializer.Serialize(payload),
+                CreatedAtUtc = DateTime.UtcNow
+            };
+
+            puzzleRepository.Add(puzzle);
+        }
+        else
+        {
+            // Fallback: pick a random seed puzzle
+            var puzzles = await puzzleRepository.GetByGameTypeAsync(request.GameType, cancellationToken);
+
+            if (puzzles.Count == 0)
+                throw new InvalidOperationException($"No puzzles found for game type '{request.GameType}'.");
+
+            puzzle = puzzles[Random.Shared.Next(puzzles.Count)];
+        }
+
+        var sessionPayload = JsonSerializer.Deserialize<HangmanPayload>(puzzle.Payload)
             ?? throw new InvalidOperationException("Invalid puzzle payload.");
 
         var session = new GameSession
@@ -32,7 +61,7 @@ public sealed class StartSessionCommandHandler(
             PuzzleId = puzzle.Id,
             Status = SessionStatus.InProgress,
             GuessedLetters = string.Empty,
-            AttemptsLeft = payload.MaxAttempts,
+            AttemptsLeft = sessionPayload.MaxAttempts,
             HintsUsed = 0,
             StartedAtUtc = DateTime.UtcNow
         };
@@ -40,7 +69,7 @@ public sealed class StartSessionCommandHandler(
         sessionRepository.Add(session);
         await sessionRepository.SaveChangesAsync(cancellationToken);
 
-        var maskedWord = HangmanHelper.MaskWord(payload.Word, []);
+        var maskedWord = HangmanHelper.MaskWord(sessionPayload.Word, []);
 
         return new SessionDto(
             session.Id,

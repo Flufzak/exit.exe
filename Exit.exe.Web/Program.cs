@@ -58,6 +58,23 @@ services.AddValidatorsFromAssembly(applicationAssembly);
 services.AddScoped<IPuzzleRepository, PuzzleRepository>();
 services.AddScoped<ISessionRepository, SessionRepository>();
 
+// ---- AI (OpenAI) ----
+var openAiKey = config["OpenAI:ApiKey"];
+
+if (!string.IsNullOrWhiteSpace(openAiKey))
+{
+    services.AddHttpClient<IAiService, OpenAiService>(client =>
+    {
+        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {openAiKey}");
+        client.Timeout = TimeSpan.FromSeconds(15);
+    });
+}
+else
+{
+    // No API key configured: AI is disabled, seed data is always used
+    services.AddSingleton<IAiService, DisabledAiService>();
+}
+
 // ---- DB ----
 var conn = config.GetConnectionString("DefaultConnection");
 if (string.IsNullOrWhiteSpace(conn))

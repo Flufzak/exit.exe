@@ -41,7 +41,7 @@ public class RequestHintCommandHandlerTests
     {
         using var db = TestDbContextFactory.Create();
         var sessionId = SeedSession(db);
-        var handler = new RequestHintCommandHandler(new SessionRepository(db));
+        var handler = new RequestHintCommandHandler(new SessionRepository(db), new AlwaysFallbackAiService());
 
         var result = await handler.Handle(
             new RequestHintCommand(sessionId, UserId), CancellationToken.None);
@@ -55,7 +55,7 @@ public class RequestHintCommandHandlerTests
     {
         using var db = TestDbContextFactory.Create();
         var sessionId = SeedSession(db, hintsUsed: 1);
-        var handler = new RequestHintCommandHandler(new SessionRepository(db));
+        var handler = new RequestHintCommandHandler(new SessionRepository(db), new AlwaysFallbackAiService());
 
         var result = await handler.Handle(
             new RequestHintCommand(sessionId, UserId), CancellationToken.None);
@@ -69,7 +69,7 @@ public class RequestHintCommandHandlerTests
     {
         using var db = TestDbContextFactory.Create();
         var sessionId = SeedSession(db, hintsUsed: 2);
-        var handler = new RequestHintCommandHandler(new SessionRepository(db));
+        var handler = new RequestHintCommandHandler(new SessionRepository(db), new AlwaysFallbackAiService());
 
         var result = await handler.Handle(
             new RequestHintCommand(sessionId, UserId), CancellationToken.None);
@@ -83,7 +83,7 @@ public class RequestHintCommandHandlerTests
     {
         using var db = TestDbContextFactory.Create();
         var sessionId = SeedSession(db, hintsUsed: 3);
-        var handler = new RequestHintCommandHandler(new SessionRepository(db));
+        var handler = new RequestHintCommandHandler(new SessionRepository(db), new AlwaysFallbackAiService());
 
         await Assert.ThrowsAsync<InvalidOperationException>(
             () => handler.Handle(new RequestHintCommand(sessionId, UserId), CancellationToken.None));
@@ -94,7 +94,7 @@ public class RequestHintCommandHandlerTests
     {
         using var db = TestDbContextFactory.Create();
         var sessionId = SeedSession(db, status: SessionStatus.Failed);
-        var handler = new RequestHintCommandHandler(new SessionRepository(db));
+        var handler = new RequestHintCommandHandler(new SessionRepository(db), new AlwaysFallbackAiService());
 
         await Assert.ThrowsAsync<InvalidOperationException>(
             () => handler.Handle(new RequestHintCommand(sessionId, UserId), CancellationToken.None));

@@ -9,7 +9,8 @@ namespace Exit.exe.Application.Features.Sessions.Commands;
 public sealed record RequestHintCommand(Guid SessionId, string UserId) : IRequest<HintResultDto>;
 
 public sealed class RequestHintCommandHandler(
-    ISessionRepository sessionRepository) : IRequestHandler<RequestHintCommand, HintResultDto>
+    ISessionRepository sessionRepository,
+    IAiService aiService) : IRequestHandler<RequestHintCommand, HintResultDto>
 {
     private const int MaxHints = 3;
 
@@ -31,8 +32,11 @@ public sealed class RequestHintCommandHandler(
 
         var guessedLetters = HangmanHelper.ParseGuessedLetters(session.GuessedLetters);
 
-        // Generate a seed-based hint depending on how many hints have been used
-        var hint = GenerateSeedHint(payload, guessedLetters, session.HintsUsed);
+        // Try AI hint first, fall back to seed-based hint
+        var hint = await aiService.GenerateHintAsync(
+            payload.Word, payload.Category, payload.Description, guessedLetters, session.HintsUsed, cancellationToken);
+
+        hint ??= GenerateSeedHint(payload, guessedLetters, session.HintsUsed);
 
         session.HintsUsed++;
         await sessionRepository.SaveChangesAsync(cancellationToken);

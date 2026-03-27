@@ -4,6 +4,12 @@ import "./styles/index.css";
 import App from "./App.tsx";
 import "./i18n/i18n";
 
+const savedTheme = localStorage.getItem("theme");
+
+if (savedTheme) {
+  document.documentElement.setAttribute("data-theme", savedTheme);
+}
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <App />

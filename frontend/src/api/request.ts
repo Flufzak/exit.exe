@@ -14,6 +14,7 @@ export async function request<T>(
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     method,
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       ...headers,
@@ -26,5 +27,6 @@ export async function request<T>(
     throw new Error(message || "API error");
   }
 
-  return response.json();
+  const text = await response.text();
+  return text ? JSON.parse(text) : ({} as T);
 }

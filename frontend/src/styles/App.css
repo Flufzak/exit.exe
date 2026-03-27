@@ -3,15 +3,17 @@ h1 {
   color: var(--text-primary);
   font-weight: 700;
   text-shadow: 0 0 3px rgb(var(--accent-rgb));
-  /* margin-bottom: 1rem; */
 }
+
 p {
   color: var(--text-primary);
 }
+
 .muted {
   /* font-size: 1.5em; */
   color: var(--text-secondary);
 }
+
 .accent-link {
   position: relative;
   color: var(--text-primary);
@@ -43,4 +45,10 @@ p {
 .accent-link:focus-visible {
   outline: 2px solid rgba(var(--accent-rgb), 0.6);
   outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.8rem;
+  }
 }

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Story } from "../../types/story";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 type Props = Story;
 
@@ -11,6 +11,7 @@ const storyImages: Record<string, string> = {
 
 export default function StoryCard({ id, duration, status, type }: Props) {
   const imageUrl = storyImages[id];
+  const { t } = useTranslation();
 
   return (
     <Card $type={type}>
@@ -47,7 +48,7 @@ const Card = styled.div<{ $type: "available" | "upcoming" }>`
   display: flex;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 3px;
   overflow: hidden;
   position: relative;
 
@@ -57,16 +58,19 @@ const Card = styled.div<{ $type: "available" | "upcoming" }>`
       opacity: 0.85;
       filter: grayscale(70%);
     `}
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 `;
 
 const Image = styled.div`
-  width: 300px;
+  flex: 0 0 240px;
   background-size: cover;
   background-position: center;
 `;
 
 const Content = styled.div`
-  padding: 2rem;
+  padding: 1.25rem;
   flex: 1;
   position: relative;
 `;
@@ -86,7 +90,6 @@ const Title = styled.h2`
 
 const Description = styled.p`
   color: var(--text-secondary);
-  max-width: 600px;
 `;
 
 const Meta = styled.div`

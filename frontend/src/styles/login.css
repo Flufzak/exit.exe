@@ -1,0 +1,82 @@
+.login-main {
+  display: flex;
+  justify-content: center;
+}
+
+.login-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 560px;
+}
+
+.hero-logo-image {
+  width: clamp(200px, 40vw, 400px);
+  height: auto;
+}
+
+.auth-card {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.auth-head {
+  padding: 28px 32px 16px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.auth-title {
+  text-align: center;
+}
+
+.provider-row {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px 32px 32px;
+  position: relative;
+  z-index: 1;
+}
+
+.provider-row .app-button {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 18px;
+}
+
+.button-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  line-height: 1;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 560px) {
+  .login-hero {
+    gap: 20px;
+  }
+
+  .hero-logo-image {
+    width: clamp(200px, 60vw, 340px);
+    height: auto;
+  }
+
+  .auth-head {
+    padding: 12px 16px 12px;
+  }
+
+  .provider-row {
+    padding: 16px;
+  }
+}

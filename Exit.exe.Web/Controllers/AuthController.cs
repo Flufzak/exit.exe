@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+﻿﻿using System.Security.Claims;
 using Exit.exe.Repository.Auth;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -27,6 +27,7 @@ public sealed class AuthController(
         return Challenge(props, "Google");
     }
 
+    // GET /api/auth/login/google/callback
     [HttpGet("login/google/callback")]
     [AllowAnonymous]
     [ApiExplorerSettings(IgnoreApi = true)]
@@ -35,20 +36,15 @@ public sealed class AuthController(
         returnUrl ??= DefaultReturnUrl;
         var info = await signInManager.GetExternalLoginInfoAsync();
         if (info is null)
-            return Redirect(safeReturnUrl);
+            return Redirect(returnUrl);
 
         var result = await signInManager.ExternalLoginSignInAsync(
-            info.LoginProvider,
-            info.ProviderKey,
-            isPersistent: false,
-            bypassTwoFactor: true);
+            info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
 
         if (!result.Succeeded)
         {
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-            var user = string.IsNullOrWhiteSpace(email)
-                ? null
-                : await userManager.FindByEmailAsync(email);
+            var user = string.IsNullOrWhiteSpace(email) ? null : await userManager.FindByEmailAsync(email);
 
             if (user is null)
             {
@@ -61,20 +57,18 @@ public sealed class AuthController(
 
                 var created = await userManager.CreateAsync(user);
                 if (!created.Succeeded)
-                    return Redirect(safeReturnUrl);
+                    return Redirect(returnUrl);
             }
 
-            var addLoginResult = await userManager.AddLoginAsync(user, info);
-            if (!addLoginResult.Succeeded)
-                return Redirect(safeReturnUrl);
-
+            await userManager.AddLoginAsync(user, info);
             await signInManager.SignInAsync(user, isPersistent: false);
         }
 
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-        return Redirect(safeReturnUrl);
+        return Redirect(returnUrl);
     }
 
+    // GET /api/auth/me
     [HttpGet("me")]
     [AllowAnonymous]
     public async Task<ActionResult<MeResponse>> Me()
@@ -89,38 +83,12 @@ public sealed class AuthController(
         return Ok(new MeResponse(true, user.Id, user.Email, user.UserName));
     }
 
+    // POST /api/auth/logout
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
         await signInManager.SignOutAsync();
         return NoContent();
-    }
-
-    private static string GetSafeReturnUrl(string? returnUrl)
-    {
-        if (string.IsNullOrWhiteSpace(returnUrl))
-            return DefaultFrontendUrl;
-
-        if (Uri.TryCreate(returnUrl, UriKind.Absolute, out var absoluteUri))
-        {
-            var allowedOrigins = new[]
-            {
-                "https://localhost:5173",
-                "http://localhost:5173",
-                "https://localhost:7007",
-                "http://localhost:7007"
-            };
-
-            var origin = absoluteUri.GetLeftPart(UriPartial.Authority);
-
-            if (allowedOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase))
-                return returnUrl;
-        }
-
-        if (returnUrl.StartsWith("/", StringComparison.Ordinal))
-            return DefaultScalarUrl;
-
-        return DefaultFrontendUrl;
     }
 
     public sealed record MeResponse(bool IsAuthenticated, string? UserId, string? Email, string? UserName);

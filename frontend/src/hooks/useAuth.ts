@@ -1,41 +1,12 @@
-import { useEffect, useState } from "react";
-import { request } from "../api/request";
-import { MeResponse } from "../types/auth";
-import { authRoutes } from "../api/routes";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 export function useAuth() {
-  const [user, setUser] = useState<MeResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const context = useContext(AuthContext);
 
-  async function fetchMe() {
-    try {
-      const data = await request<MeResponse>("/api/auth/me");
-      setUser(data);
-    } catch {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider");
   }
 
-  useEffect(() => {
-    fetchMe();
-  }, []);
-
-  function loginWithGoogle() {
-    window.location.href = authRoutes.google;
-  }
-
-  function loginWithFacebook() {
-    window.location.href = authRoutes.facebook;
-  }
-
-  return {
-    user,
-    loading,
-    isAuthenticated: user?.isAuthenticated ?? false,
-    refetch: fetchMe,
-    loginWithGoogle,
-    loginWithFacebook,
-  };
+  return context;
 }

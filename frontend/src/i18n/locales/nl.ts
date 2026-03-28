@@ -5,6 +5,7 @@ export default {
   "all-stories": "Alle verhalen",
   "stories-error": "Kan verhalen niet laden.",
   "retrieve-stories-error": "Kon verhalen niet ophalen. {{action}}",
+  "profile-error": "Kan profiel niet laden. {{action}}",
   "try-again": "Probeer opnieuw.",
   error: "Error",
   retry: "Opnieuw proberen",
@@ -34,4 +35,16 @@ export default {
   profile: "Profiel",
   "continue-google": "Ga door met Google",
   "continue-facebook": "Ga door met Facebook",
+
+  //profiel
+  "your-activity": "Jouw activiteit",
+  "total-games": "Totale spelletjes",
+  won: "Gewonnen",
+  lost: "Verloren",
+  "in-progress": "Bezig",
+  "win-rate": "Winpercentage",
+  "best-score": "Hoogste score",
+  "average-score": "Gemiddelde score",
+  "hints-used": "Hints gebruikt",
+  "last-played": "Laatst gespeeld",
 };

@@ -2,6 +2,7 @@ import AppLayout from "./layout/AppLayout";
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
+import NotFound from "./pages/NotFound";
 import StoriesPage from "./pages/StoriesPage";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import "./styles/App.css";
@@ -19,6 +20,8 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/profile" element={<ProfilePage />} />
           </Route>
+
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </BrowserRouter>

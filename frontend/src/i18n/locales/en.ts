@@ -47,4 +47,13 @@ export default {
   "average-score": "Average score",
   "hints-used": "Hints used",
   "last-played": "Last played",
+
+  //notfound
+  "should-not-come": "You should not be here.",
+  "lost-story":
+    "This place is not on the map. Maybe it was forgotten... or maybe you were never meant to find it.",
+  "safe-grounds":
+    "Return to safe grounds, or continue and discover what is hidden.",
+  "start-adventure": "Start an adventure",
+  "return-home": "Return home",
 };

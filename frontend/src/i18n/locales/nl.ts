@@ -49,9 +49,9 @@ export default {
   "last-played": "Laatst gespeeld",
 
   //not found
-  "should-not-come": "Je had hier niet moeten komen…",
+  "should-not-come": "Je had hier niet moeten komen...",
   "lost-story":
-    "Deze plek staat niet op de kaart. Misschien is ze vergeten… of misschien mocht je dit nooit vinden.",
+    "Deze plek staat niet op de kaart. Misschien is ze vergeten... of misschien mocht je dit nooit vinden.",
   "safe-grounds":
     "Keer terug naar veilige grond, of dwaal verder en ontdek wat er nog verborgen ligt.",
   "start-adventure": "Start een avontuur",

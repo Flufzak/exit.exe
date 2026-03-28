@@ -1,4 +1,10 @@
-export type SessionStatus = "Running" | "Won" | "Lost" | string;
+export type SessionStatus = "InProgress" | "Success" | "Failed" | string;
+
+export type SessionNarrativeDto = {
+  intro: string;
+  success: string;
+  failure: string;
+};
 
 export type SessionDto = {
   sessionId: string;
@@ -7,6 +13,7 @@ export type SessionDto = {
   attemptsLeft: number;
   guessedLetters: string[];
   status: SessionStatus;
+  narrative?: SessionNarrativeDto | null;
 };
 
 export type GuessResultDto = {

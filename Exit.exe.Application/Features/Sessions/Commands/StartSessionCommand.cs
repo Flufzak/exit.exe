@@ -77,6 +77,8 @@ public sealed class StartSessionCommandHandler(
             maskedWord,
             session.AttemptsLeft,
             [],
-            session.Status.ToString());
+            session.Status.ToString(),
+            null);
     }
+
 }

@@ -21,12 +21,16 @@ public sealed class GetSessionQueryHandler(
         var guessedLetters = HangmanHelper.ParseGuessedLetters(data.Session.GuessedLetters);
         var maskedWord = HangmanHelper.MaskWord(payload.Word, guessedLetters);
 
-        return new SessionDto(
-            data.Session.Id,
-            data.PuzzleGameType,
-            maskedWord,
-            data.Session.AttemptsLeft,
-            guessedLetters,
-            data.Session.Status.ToString());
+return new SessionDto(
+    data.Session.Id,
+    data.PuzzleGameType,
+    maskedWord,
+    data.Session.AttemptsLeft,
+    guessedLetters,
+    data.Session.Status.ToString(),
+    new SessionNarrativeDto(
+        payload.Narrative.Intro,
+        payload.Narrative.Success,
+        payload.Narrative.Failure));
     }
 }

@@ -15,4 +15,19 @@ public sealed class HangmanPayload
 
     [JsonPropertyName("maxAttempts")]
     public int MaxAttempts { get; set; } = 6;
+
+    [JsonPropertyName("narrative")]
+    public HangmanNarrative Narrative { get; set; } = new();
+}
+
+public sealed class HangmanNarrative
+{
+    [JsonPropertyName("intro")]
+    public string Intro { get; set; } = string.Empty;
+
+    [JsonPropertyName("success")]
+    public string Success { get; set; } = string.Empty;
+
+    [JsonPropertyName("failure")]
+    public string Failure { get; set; } = string.Empty;
 }

@@ -4,7 +4,7 @@ import HangmanFigure from "./HangmanFigure";
 import type { SessionDto } from "../../types/hangman";
 
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-const DEFAULT_DURATION_MINUTES = 2;
+const DEFAULT_DURATION_MINUTES = 4;
 const FINAL_WARNING_SECONDS = 30;
 
 type HangmanStoryViewModel = {
@@ -140,11 +140,11 @@ function getGameMasterMessage(
     return "Too late. The ritual is complete. The chamber has chosen silence over mercy.";
   }
 
-  if (status === "Won") {
+  if (status === "Success") {
     return "You broke the code. The prison seal weakens.";
   }
 
-  if (status === "Lost") {
+  if (status === "Failed") {
     return "The chamber has judged you. The mechanism is complete.";
   }
 
@@ -172,15 +172,37 @@ function getStatusLabel(status: string, hasTimedOut: boolean): string {
     return "TIME EXPIRED";
   }
 
-  if (status === "Won") {
+  if (status === "Success") {
     return "CODE BROKEN";
   }
 
-  if (status === "Lost") {
+  if (status === "Failed") {
     return "EXECUTION COMPLETE";
   }
 
   return "MECHANISM ACTIVE";
+}
+function getNarrativeMessage(
+  session: SessionDto | null,
+  status: string,
+): string | null {
+  if (!session?.narrative) {
+    return null;
+  }
+
+  if (status === "Success" && session.narrative.success.trim().length > 0) {
+    return session.narrative.success;
+  }
+
+  if (status === "Failed" && session.narrative.failure.trim().length > 0) {
+    return session.narrative.failure;
+  }
+
+  if (status === "InProgress" && session.narrative.intro.trim().length > 0) {
+    return session.narrative.intro;
+  }
+
+  return null;
 }
 
 function getSessionKey(
@@ -239,7 +261,7 @@ export default function HangmanGame({
   const activeClockRef = useRef<"clock1" | "clock2" | "none">("none");
   const timeoutSoundPlayedRef = useRef(false);
 
-  const isFinished = status === "Won" || status === "Lost";
+  const isFinished = status === "Success" || status === "Failed";
   const isGameOver = isFinished || hasTimedOut;
 
   useEffect(() => {
@@ -396,16 +418,19 @@ export default function HangmanGame({
         console.warn("Timeout audio playback was blocked by the browser.");
       });
   }, [hasTimedOut]);
-
+  console.log("SESSION DEBUG", session);
   const timerValue = formatSeconds(timeLeft);
-  const gameMasterMessage = getGameMasterMessage(
-    status,
-    failedAttempts,
-    hint,
-    isLoading,
-    hasTimedOut,
-    timeLeft,
-  );
+  const narrativeMessage = getNarrativeMessage(session, status);
+  const gameMasterMessage =
+    narrativeMessage ??
+    getGameMasterMessage(
+      status,
+      failedAttempts,
+      hint,
+      isLoading,
+      hasTimedOut,
+      timeLeft,
+    );
   const statusLabel = getStatusLabel(status, hasTimedOut);
 
   return (
@@ -502,9 +527,8 @@ export default function HangmanGame({
 
                       return (
                         <button
-                          className={`hangman-key ${
-                            isUsed ? "hangman-key-used" : ""
-                          }`}
+                          className={`hangman-key ${isUsed ? "hangman-key-used" : ""
+                            }`}
                           disabled={isLoading || isGameOver || isUsed}
                           key={letter}
                           onClick={() => onGuess(letter)}

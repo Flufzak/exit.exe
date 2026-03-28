@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { useAuth } from "../hooks/useAuth";
-import { request } from "../api/request";
 import AppButton from "./ui/AppButton";
 import { Link, NavLink } from "react-router-dom";
 import ThemeSwitch from "./ui/ThemeSwitch";
@@ -10,7 +9,7 @@ import { useState, useEffect } from "react";
 import HamburgerMenu from "./ui/HamburgerMenu";
 
 export default function Header() {
-  const { isAuthenticated, loading, refetch } = useAuth();
+  const { isAuthenticated, loading, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const { t } = useTranslation();
@@ -20,11 +19,6 @@ export default function Header() {
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
-
-  async function handleLogout() {
-    await request("/api/auth/logout", { method: "POST" });
-    refetch();
-  }
 
   const NavLinks = (
     <NavGroup>
@@ -69,7 +63,7 @@ export default function Header() {
             )}
 
             {isAuthenticated && (
-              <AppButton onClick={handleLogout}>{t("log-out")}</AppButton>
+              <AppButton onClick={logout}>{t("log-out")}</AppButton>
             )}
           </DesktopOnly>
         )}
@@ -100,7 +94,7 @@ export default function Header() {
           {isAuthenticated && (
             <AppButton
               onClick={() => {
-                handleLogout();
+                logout();
                 setMenuOpen(false);
               }}
             >
@@ -193,7 +187,7 @@ const MobileMenu = styled.div`
 
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 3px;
 
   padding: 16px;
 

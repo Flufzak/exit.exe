@@ -28,7 +28,7 @@ const Wrapper = styled.div`
 const Box = styled.div`
   background: var(--surface);
   border: 1px solid var(--danger);
-  border-radius: 8px;
+  border-radius: 3px;
   padding: 24px;
 `;
 
@@ -48,7 +48,7 @@ const ReloadButton = styled.button`
   border: 1px solid var(--danger);
   color: var(--danger);
   padding: 0.6rem 1.2rem;
-  border-radius: 6px;
+  border-radius: 3px;
   cursor: pointer;
   font-family: inherit;
 

@@ -23,7 +23,7 @@ const Switch = styled.button`
   border: 1px solid var(--border);
   color: var(--text-primary);
   padding: 6px 10px;
-  border-radius: 8px;
+  border-radius: 3px;
   cursor: pointer;
   font-size: 0.8rem;
 

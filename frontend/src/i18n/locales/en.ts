@@ -49,7 +49,7 @@ export default {
   "last-played": "Last played",
 
   //notfound
-  "should-not-come": "You should not be here.",
+  "should-not-come": "You should not be here...",
   "lost-story":
     "This place is not on the map. Maybe it was forgotten... or maybe you were never meant to find it.",
   "safe-grounds":

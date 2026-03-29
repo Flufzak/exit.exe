@@ -12,4 +12,6 @@ public sealed record SessionDto(
     int AttemptsLeft,
     IReadOnlyList<string> GuessedLetters,
     string Status,
+    int HintsUsed,
+    int? Score,
     SessionNarrativeDto? Narrative);

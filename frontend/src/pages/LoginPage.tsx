@@ -84,12 +84,12 @@ export default function Login() {
               </span>
             </AppButton>
 
-            <AppButton variant="primary" onClick={loginWithFacebook}>
+            {/* <AppButton variant="primary" onClick={loginWithFacebook}>
               <span className="button-content">
                 <FacebookIcon />
                 <span>{t("continue-facebook")}</span>
               </span>
-            </AppButton>
+            </AppButton> */}
           </div>
         </div>
       </section>

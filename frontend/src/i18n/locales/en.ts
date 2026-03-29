@@ -5,6 +5,7 @@ export default {
   "all-stories": "All stories",
   "stories-error": "Failed to load stories.",
   "retrieve-stories-error": "Could not retrieve stories. {{action}}",
+  "profile-error": "Failed to load profile. {{action}}",
   "try-again": "Please try again.",
   error: "Error",
   retry: "Retry",
@@ -34,4 +35,25 @@ export default {
   profile: "Profile",
   "continue-google": "Continue with Google",
   "continue-facebook": "Continue with Facebook",
+
+  //profile
+  "your-activity": "Your activity",
+  "total-games": "Total games",
+  won: "Won",
+  lost: "Lost",
+  "in-progress": "In progress",
+  "win-rate": "Win rate",
+  "best-score": "Best score",
+  "average-score": "Average score",
+  "hints-used": "Hints used",
+  "last-played": "Last played",
+
+  //notfound
+  "should-not-come": "You should not be here...",
+  "lost-story":
+    "This place is not on the map. Maybe it was forgotten... or maybe you were never meant to find it.",
+  "safe-grounds":
+    "Return to safe grounds, or continue and discover what is hidden.",
+  "start-adventure": "Start an adventure",
+  "return-home": "Return home",
 };

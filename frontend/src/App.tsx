@@ -1,10 +1,13 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AppLayout from "./layout/AppLayout";
-import HangmanPage from "./pages/Hangman";
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import StoriesPage from "./pages/StoriesPage";
+import HangmanPage from "./pages/Hangman";
+import ProfilePage from "./pages/ProfilePage";
+import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./routes/ProtectedRoute";
 import "./styles/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
   return (
@@ -14,7 +17,13 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/stories" element={<StoriesPage />} />
-          <Route path="/hangman" element={<HangmanPage />} />
+
+          <Route element={<ProtectedRoute />}>
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/hangman" element={<HangmanPage />} />
+          </Route>
+
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </BrowserRouter>

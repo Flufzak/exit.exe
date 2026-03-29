@@ -13,9 +13,6 @@ namespace Exit.exe.Web.Controllers;
 [Authorize]
 public sealed class SessionsController(ISender sender) : ControllerBase
 {
-    /// <summary>
-    /// GET /api/sessions — Get session history for the current user.
-    /// </summary>
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<SessionSummaryDto>>> History(
         [FromQuery] int limit = 50,
@@ -28,24 +25,17 @@ public sealed class SessionsController(ISender sender) : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>
-    /// POST /api/sessions — Start a new game session.
-    /// Body: { "gameType": "hangman" }
-    /// </summary>
     [HttpPost]
     public async Task<ActionResult<SessionDto>> Start(
         [FromBody] StartSessionRequest request,
         CancellationToken ct)
     {
         var userId = GetUserId();
-        var command = new StartSessionCommand(request.GameType, userId);
+        var command = new StartSessionCommand(request.GameType, userId, request.Language);
         var result = await sender.Send(command, ct);
         return CreatedAtAction(nameof(Get), new { id = result.SessionId }, result);
     }
 
-    /// <summary>
-    /// GET /api/sessions/{id} — Get current session state.
-    /// </summary>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<SessionDto>> Get(Guid id, CancellationToken ct)
     {
@@ -55,10 +45,6 @@ public sealed class SessionsController(ISender sender) : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>
-    /// POST /api/sessions/{id}/guess — Submit a letter guess.
-    /// Body: { "letter": "A" }
-    /// </summary>
     [HttpPost("{id:guid}/guess")]
     public async Task<ActionResult<GuessResultDto>> Guess(
         Guid id,
@@ -71,9 +57,6 @@ public sealed class SessionsController(ISender sender) : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>
-    /// POST /api/sessions/{id}/hint — Request a hint.
-    /// </summary>
     [HttpPost("{id:guid}/hint")]
     public async Task<ActionResult<HintResultDto>> Hint(Guid id, CancellationToken ct)
     {
@@ -90,5 +73,5 @@ public sealed class SessionsController(ISender sender) : ControllerBase
     }
 }
 
-public sealed record StartSessionRequest(string GameType);
+public sealed record StartSessionRequest(string GameType, string? Language);
 public sealed record GuessRequest(string Letter);

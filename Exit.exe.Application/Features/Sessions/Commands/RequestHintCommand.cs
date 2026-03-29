@@ -7,7 +7,6 @@ using MediatR;
 namespace Exit.exe.Application.Features.Sessions.Commands;
 
 public sealed record RequestHintCommand(Guid SessionId, string UserId) : IRequest<HintResultDto>;
-
 public sealed class RequestHintCommandHandler(
     ISessionRepository sessionRepository,
     IAiService aiService) : IRequestHandler<RequestHintCommand, HintResultDto>
@@ -32,9 +31,14 @@ public sealed class RequestHintCommandHandler(
 
         var guessedLetters = HangmanHelper.ParseGuessedLetters(session.GuessedLetters);
 
-        // Try AI hint first, fall back to seed-based hint
         var hint = await aiService.GenerateHintAsync(
-            payload.Word, payload.Category, payload.Description, guessedLetters, session.HintsUsed, cancellationToken);
+            payload.Mechanics.TargetWord,
+            payload.Category,
+            payload.Description,
+            guessedLetters,
+            session.HintsUsed,
+            payload.Language,
+            cancellationToken);
 
         hint ??= GenerateSeedHint(payload, guessedLetters, session.HintsUsed);
 
@@ -44,10 +48,6 @@ public sealed class RequestHintCommandHandler(
         return new HintResultDto(hint, session.HintsUsed);
     }
 
-    /// <summary>
-    /// Generates progressive hints from seed data (fallback strategy).
-    /// Hint 1: Category, Hint 2: Description, Hint 3: Reveal an unguessed letter.
-    /// </summary>
     private static string GenerateSeedHint(
         HangmanPayload payload,
         IReadOnlyCollection<string> guessedLetters,
@@ -57,7 +57,7 @@ public sealed class RequestHintCommandHandler(
         {
             0 => $"The category is: {payload.Category}",
             1 => $"Hint: {payload.Description}",
-            2 => RevealLetterHint(payload.Word, guessedLetters),
+            2 => RevealLetterHint(payload.Mechanics.TargetWord, guessedLetters),
             _ => "No more hints available."
         };
     }

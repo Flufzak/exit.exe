@@ -88,6 +88,10 @@
   flex-direction: column;
 }
 
+.hangman-panel-left {
+  min-height: 700px;
+}
+
 .hangman-panel-center {
   display: flex;
   flex-direction: column;
@@ -102,145 +106,6 @@
   letter-spacing: 0.16em;
   margin-bottom: 1rem;
   text-transform: uppercase;
-}
-
-.hangman-master-card {
-  align-items: flex-start;
-  background:
-    linear-gradient(180deg, rgb(20 10 10 / 0.72), rgb(8 10 18 / 0.82));
-  border: 1px solid rgb(140 110 70 / 0.22);
-  border-radius: 20px;
-  box-shadow:
-    inset 0 1px 0 rgb(255 220 160 / 0.04),
-    0 18px 40px rgb(0 0 0 / 0.22);
-  display: flex;
-  gap: 1rem;
-  padding: 1rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.hangman-master-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at top left, rgb(160 60 40 / 0.08), transparent 38%),
-    radial-gradient(circle at bottom right, rgb(255 180 80 / 0.05), transparent 30%);
-  pointer-events: none;
-}
-
-.hangman-master-seal {
-  align-items: center;
-  background:
-    radial-gradient(circle at 35% 35%, rgb(140 35 20 / 0.95), rgb(55 10 10 / 0.96));
-  border: 1px solid rgb(175 120 70 / 0.35);
-  border-radius: 50%;
-  box-shadow:
-    0 0 0 2px rgb(255 180 90 / 0.05),
-    0 0 24px rgb(120 20 20 / 0.18);
-  color: rgb(245 220 180 / 0.9);
-  display: flex;
-  flex-shrink: 0;
-  font-family: "Cormorant Garamond", serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  height: 56px;
-  justify-content: center;
-  width: 56px;
-}
-
-.hangman-master-content {
-  min-width: 0;
-  position: relative;
-  z-index: 1;
-}
-
-.hangman-master-title {
-  color: rgb(230 196 140 / 0.95);
-  font-family: "Inter", sans-serif;
-  font-size: 0.82rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.hangman-master-message {
-  color: var(--text-primary);
-  font-family: "Cormorant Garamond", serif;
-  font-size: 1.35rem;
-  line-height: 1.45;
-  margin: 0.45rem 0 0;
-  text-shadow: 0 0 10px rgb(0 0 0 / 0.16);
-}
-
-.hangman-panel-left {
-  min-height: 700px;
-}
-
-.hangman-figure-wrap {
-  flex: 1;
-  min-height: 500px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  overflow: hidden;
-  padding: 1.5rem 0 0;
-}
-
-.hangman-figure-svg {
-  display: block;
-  height: 520px;
-  max-width: none;
-  width: auto;
-}
-
-.hangman-draw-line {
-  animation: hangmanDraw 0.35s ease forwards;
-  filter: drop-shadow(0 0 6px rgb(var(--accent-rgb) / 0.6));
-  stroke-dasharray: 120;
-  stroke-dashoffset: 120;
-}
-
-.hangman-draw-circle {
-  animation: hangmanDraw 0.4s ease forwards;
-  filter: drop-shadow(0 0 6px rgb(var(--accent-rgb) / 0.6));
-  stroke-dasharray: 126;
-  stroke-dashoffset: 126;
-}
-
-@keyframes hangmanDraw {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-.hangman-side-stats {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-top: auto;
-}
-
-.hangman-side-stat {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.hangman-side-stat-label {
-  color: var(--text-secondary);
-  font-family: "Inter", sans-serif;
-  font-size: 0.74rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.hangman-side-stat-value {
-  color: var(--text-primary);
-  font-family: "Inter", sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
 }
 
 .hangman-story-card {
@@ -476,51 +341,74 @@
 
 .hangman-master-card {
   align-items: flex-start;
-  background: rgb(5 14 28 / 0.68);
-  border: 1px solid rgb(var(--accent-rgb) / 0.12);
+  background:
+    linear-gradient(180deg, rgb(20 10 10 / 0.72), rgb(8 10 18 / 0.82));
+  border: 1px solid rgb(140 110 70 / 0.22);
   border-radius: 20px;
+  box-shadow:
+    inset 0 1px 0 rgb(255 220 160 / 0.04),
+    0 18px 40px rgb(0 0 0 / 0.22);
   display: flex;
   gap: 1rem;
+  overflow: hidden;
   padding: 1rem;
+  position: relative;
+}
+
+.hangman-master-card::before {
+  background:
+    radial-gradient(circle at top left, rgb(160 60 40 / 0.08), transparent 38%),
+    radial-gradient(circle at bottom right, rgb(255 180 80 / 0.05), transparent 30%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
 }
 
 .hangman-master-avatar {
   align-items: center;
-  background: radial-gradient(
-    circle at 30% 30%,
-    rgb(var(--accent-rgb) / 1),
-    rgb(var(--accent-rgb) / 0.35) 70%
-  );
+  background:
+    radial-gradient(
+      circle at 30% 30%,
+      rgb(var(--accent-rgb) / 1),
+      rgb(var(--accent-rgb) / 0.35) 70%
+    );
   border-radius: 50%;
   color: var(--text-primary);
   display: flex;
+  flex-shrink: 0;
   font-family: "Inter", sans-serif;
   font-size: 0.9rem;
   font-weight: 900;
   height: 54px;
   justify-content: center;
   min-width: 54px;
+  position: relative;
+  z-index: 1;
 }
 
 .hangman-master-content {
   min-width: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .hangman-master-title {
-  color: var(--accent);
+  color: rgb(230 196 140 / 0.95);
   font-family: "Inter", sans-serif;
   font-size: 0.82rem;
   font-weight: 800;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .hangman-master-message {
   color: var(--text-primary);
-  font-family: "Inter", sans-serif;
-  font-size: 0.95rem;
-  line-height: 1.7;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.1rem;
+  line-height: 1.55;
   margin: 0.35rem 0 0;
+  text-shadow: 0 0 10px rgb(0 0 0 / 0.16);
 }
 
 .hangman-hint-card {
@@ -546,6 +434,224 @@
   font-family: "Inter", sans-serif;
   font-size: 0.95rem;
   line-height: 1.6;
+}
+
+.hangman-figure-wrap {
+  align-items: flex-start;
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  min-height: 500px;
+  overflow: hidden;
+  padding: 1.5rem 0 0;
+}
+
+.hangman-figure-svg {
+  display: block;
+  height: 520px;
+  max-width: none;
+  width: auto;
+}
+
+.hangman-draw-line {
+  animation: hangmanDraw 0.35s ease forwards;
+  filter: drop-shadow(0 0 6px rgb(var(--accent-rgb) / 0.6));
+  stroke-dasharray: 120;
+  stroke-dashoffset: 120;
+}
+
+.hangman-draw-circle {
+  animation: hangmanDraw 0.4s ease forwards;
+  filter: drop-shadow(0 0 6px rgb(var(--accent-rgb) / 0.6));
+  stroke-dasharray: 126;
+  stroke-dashoffset: 126;
+}
+
+@keyframes hangmanDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.hangman-side-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: auto;
+}
+
+.hangman-side-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.hangman-side-stat-label {
+  color: var(--text-secondary);
+  font-family: "Inter", sans-serif;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hangman-side-stat-value {
+  color: var(--text-primary);
+  font-family: "Inter", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+[data-theme="light"] .hangman-screen {
+  background:
+    linear-gradient(rgb(244 240 232 / 0.74), rgb(244 240 232 / 0.74)),
+    url("/images/dungeon-bg.jpg") center / cover no-repeat;
+}
+
+[data-theme="light"] .hangman-overlay {
+  background:
+    linear-gradient(
+      180deg,
+      rgb(250 247 241 / 0.36) 0%,
+      rgb(244 239 231 / 0.48) 45%,
+      rgb(238 233 225 / 0.62) 100%
+    );
+}
+
+[data-theme="light"] .hangman-topbar-item {
+  background: rgb(255 251 245 / 0.82);
+  border: 1px solid rgb(28 52 61 / 0.12);
+  box-shadow: 0 10px 24px rgb(40 50 60 / 0.08);
+}
+
+[data-theme="light"] .hangman-topbar-label {
+  color: rgb(95 108 116 / 0.92);
+}
+
+[data-theme="light"] .hangman-topbar-value {
+  color: rgb(22 39 46 / 0.96);
+}
+
+[data-theme="light"] .hangman-panel {
+  background: rgb(255 250 243 / 0.76);
+  border: 1px solid rgb(28 52 61 / 0.1);
+  box-shadow: 0 18px 40px rgb(40 50 60 / 0.08);
+}
+
+[data-theme="light"] .hangman-panel-header {
+  color: var(--accent);
+}
+
+[data-theme="light"] .hangman-side-stat-label,
+[data-theme="light"] .hangman-used-letters-label,
+[data-theme="light"] .hangman-story-subtitle {
+  color: rgb(96 108 118 / 0.9);
+}
+
+[data-theme="light"] .hangman-side-stat-value,
+[data-theme="light"] .hangman-used-letters-value,
+[data-theme="light"] .hangman-error-text {
+  color: rgb(23 39 47 / 0.96);
+}
+
+[data-theme="light"] .hangman-story-card,
+[data-theme="light"] .hangman-game-card,
+[data-theme="light"] .hangman-master-card,
+[data-theme="light"] .hangman-hint-card {
+  background: rgb(255 252 247 / 0.82);
+  border: 1px solid rgb(28 52 61 / 0.1);
+  box-shadow: 0 18px 44px rgb(40 50 60 / 0.08);
+}
+
+[data-theme="light"] .hangman-master-card::before {
+  background:
+    radial-gradient(circle at top left, rgb(0 180 160 / 0.04), transparent 40%),
+    radial-gradient(circle at bottom right, rgb(160 140 90 / 0.05), transparent 34%);
+}
+
+[data-theme="light"] .hangman-story-title {
+  color: rgb(20 37 44 / 0.96);
+}
+
+[data-theme="light"] .hangman-story-description {
+  color: rgb(53 68 76 / 0.95);
+  text-shadow: none;
+}
+
+[data-theme="light"] .hangman-alert-chip {
+  background: rgb(var(--accent-rgb) / 0.1);
+  border: 1px solid rgb(var(--accent-rgb) / 0.22);
+  color: var(--accent);
+}
+
+[data-theme="light"] .hangman-key {
+  background: rgb(255 255 255 / 0.84);
+  border: 1px solid rgb(28 52 61 / 0.12);
+  box-shadow: 0 4px 10px rgb(40 50 60 / 0.04);
+  color: rgb(22 39 46 / 0.96);
+}
+
+[data-theme="light"] .hangman-key:hover:not(:disabled) {
+  background: rgb(var(--accent-rgb) / 0.08);
+  border-color: rgb(var(--accent-rgb) / 0.34);
+  box-shadow: 0 8px 18px rgb(var(--accent-rgb) / 0.12);
+}
+
+[data-theme="light"] .hangman-key-used {
+  background: rgb(var(--accent-rgb) / 0.12);
+  border-color: rgb(var(--accent-rgb) / 0.22);
+  color: var(--accent);
+}
+
+[data-theme="light"] .hangman-primary-button {
+  background: rgb(255 255 255 / 0.88);
+  border: 1px solid rgb(var(--accent-rgb) / 0.34);
+  box-shadow: 0 8px 20px rgb(var(--accent-rgb) / 0.08);
+  color: var(--accent);
+}
+
+[data-theme="light"] .hangman-primary-button:hover:not(:disabled) {
+  background: rgb(var(--accent-rgb) / 0.08);
+  box-shadow: 0 10px 24px rgb(var(--accent-rgb) / 0.12);
+}
+
+[data-theme="light"] .hangman-secondary-button {
+  background: rgb(255 255 255 / 0.7);
+  border: 1px solid rgb(28 52 61 / 0.12);
+  color: rgb(22 39 46 / 0.96);
+}
+
+[data-theme="light"] .hangman-secondary-button:hover:not(:disabled) {
+  background: rgb(255 255 255 / 0.9);
+  border-color: rgb(var(--accent-rgb) / 0.26);
+}
+
+[data-theme="light"] .hangman-master-avatar {
+  color: white;
+}
+
+[data-theme="light"] .hangman-master-title,
+[data-theme="light"] .hangman-hint-label {
+  color: var(--accent);
+}
+
+[data-theme="light"] .hangman-master-message,
+[data-theme="light"] .hangman-hint-text {
+  color: rgb(34 48 56 / 0.96);
+}
+
+[data-theme="light"] .hangman-word {
+  color: rgb(0 170 150 / 0.95);
+  text-shadow: 0 0 12px rgb(var(--accent-rgb) / 0.08);
+}
+
+[data-theme="light"] .hangman-draw-line,
+[data-theme="light"] .hangman-draw-circle {
+  filter: drop-shadow(0 0 3px rgb(70 90 105 / 0.18));
+}
+
+[data-theme="light"] .hangman-figure-svg line,
+[data-theme="light"] .hangman-figure-svg circle {
+  stroke: rgb(58 74 84 / 0.95);
 }
 
 @media (max-width: 1200px) {

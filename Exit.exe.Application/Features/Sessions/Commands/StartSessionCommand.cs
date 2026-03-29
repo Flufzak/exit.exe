@@ -7,11 +7,14 @@ using MediatR;
 namespace Exit.exe.Application.Features.Sessions.Commands;
 
 public sealed record StartSessionCommand(string GameType, string UserId, string? Language) : IRequest<SessionDto>;
+
 public sealed class StartSessionCommandHandler(
     IPuzzleRepository puzzleRepository,
     ISessionRepository sessionRepository,
     IAiService aiService) : IRequestHandler<StartSessionCommand, SessionDto>
 {
+    private const int DefaultMaxAttempts = 6;
+
     public async Task<SessionDto> Handle(StartSessionCommand request, CancellationToken cancellationToken)
     {
         Puzzle puzzle;
@@ -33,7 +36,7 @@ public sealed class StartSessionCommandHandler(
                 Mechanics = new HangmanMechanics
                 {
                     TargetWord = aiResult.Word,
-                    MaxAttempts = aiResult.MaxAttempts
+                    MaxAttempts = DefaultMaxAttempts
                 },
                 Solution = new HangmanSolution
                 {
@@ -64,6 +67,8 @@ public sealed class StartSessionCommandHandler(
         var sessionPayload = JsonSerializer.Deserialize<HangmanPayload>(puzzle.Payload)
             ?? throw new InvalidOperationException("Invalid puzzle payload.");
 
+        sessionPayload.Mechanics.MaxAttempts = DefaultMaxAttempts;
+
         var session = new GameSession
         {
             Id = Guid.NewGuid(),
@@ -71,7 +76,7 @@ public sealed class StartSessionCommandHandler(
             PuzzleId = puzzle.Id,
             Status = SessionStatus.InProgress,
             GuessedLetters = string.Empty,
-            AttemptsLeft = sessionPayload.Mechanics.MaxAttempts,
+            AttemptsLeft = DefaultMaxAttempts,
             HintsUsed = 0,
             StartedAtUtc = DateTime.UtcNow
         };

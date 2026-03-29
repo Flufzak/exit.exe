@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import HangmanGame from "../components/hangman/HangmanGame";
@@ -49,7 +49,7 @@ export default function HangmanPage() {
 
   const hasStartedSessionRef = useRef(false);
 
-  const startNewSession = async () => {
+  const startNewSession = useCallback(async () => {
     setSessionLoading(true);
     setSessionError(null);
     setHint(null);
@@ -75,7 +75,7 @@ export default function HangmanPage() {
     } finally {
       setSessionLoading(false);
     }
-  };
+  }, [i18n.language]);
 
   useEffect(() => {
     if (hasStartedSessionRef.current) {
@@ -84,7 +84,7 @@ export default function HangmanPage() {
 
     hasStartedSessionRef.current = true;
     void startNewSession();
-  }, []);
+  }, [startNewSession]);
 
   const handleGuess = async (letter: string) => {
     if (!session || isSubmitting) {
@@ -142,7 +142,9 @@ export default function HangmanPage() {
   };
 
   const handleRetry = async () => {
+    hasStartedSessionRef.current = false;
     await startNewSession();
+    hasStartedSessionRef.current = true;
   };
 
   const combinedError = sessionError ?? storiesError;

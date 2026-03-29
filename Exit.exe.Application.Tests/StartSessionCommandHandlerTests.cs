@@ -23,7 +23,7 @@ public class StartSessionCommandHandlerTests
 
         var handler = new StartSessionCommandHandler(
             new PuzzleRepository(db), new SessionRepository(db), new AlwaysFallbackAiService());
-        var command = new StartSessionCommand("hangman-test", "user-1");
+        var command = new StartSessionCommand("story-1", "user-1", "nl");
 
         // Act
         var result = await handler.Handle(command, CancellationToken.None);
@@ -42,7 +42,7 @@ public class StartSessionCommandHandlerTests
         using var db = TestDbContextFactory.Create();
         var handler = new StartSessionCommandHandler(
             new PuzzleRepository(db), new SessionRepository(db), new AlwaysFallbackAiService());
-        var command = new StartSessionCommand("unknown", "user-1");
+        var command = new StartSessionCommand("unknown", "user-1", "nl");
 
         await Assert.ThrowsAsync<InvalidOperationException>(
             () => handler.Handle(command, CancellationToken.None));

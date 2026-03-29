@@ -18,18 +18,22 @@ public sealed class AiCoreService(
 {
     private readonly AiCoreOptions _options = options.Value;
 
-    public async Task<AiPuzzleResult?> GenerateHangmanPuzzleAsync(CancellationToken ct)
+    public async Task<AiPuzzleResult?> GenerateHangmanPuzzleAsync(string? language, CancellationToken ct)
     {
         try
         {
+            var normalizedLanguage = NormalizeLanguage(language);
             var endpoint = $"{_options.BaseUrl.TrimEnd('/')}/puzzles/generate";
+
+            logger.LogInformation("Generating hangman puzzle in language: {Language}", normalizedLanguage);
 
             var request = new GeneratePuzzleRequest
             {
                 Room = 1,
                 Type = "hangman",
                 Difficulty = 4,
-                ThemeWord = null
+                ThemeWord = null,
+                Language = normalizedLanguage
             };
 
             var response = await httpClient.PostAsJsonAsync(endpoint, request, ct);
@@ -71,7 +75,26 @@ public sealed class AiCoreService(
                 payload?.Category?.Trim()
                 ?? "General";
 
-            return new AiPuzzleResult(word, description, category);
+            var intro =
+                payload?.Narrative?.Intro?.Trim()
+                ?? "A dark presence watches your every move. Guess wisely.";
+
+            var success =
+                payload?.Narrative?.Success?.Trim()
+                ?? "You uncovered the truth hidden in the word. The path forward opens.";
+
+            var failure =
+                payload?.Narrative?.Failure?.Trim()
+                ?? "The final bell tolls. The ritual completes before you can escape.";
+
+            var maxAttempts = payload?.Mechanics?.MaxAttempts ?? 6;
+
+            return new AiPuzzleResult(
+                word,
+                description,
+                category,
+                new AiPuzzleNarrativeResult(intro, success, failure),
+                maxAttempts);
         }
         catch (Exception ex)
         {
@@ -86,11 +109,15 @@ public sealed class AiCoreService(
         string description,
         IReadOnlyCollection<string> guessedLetters,
         int hintNumber,
+        string? language,
         CancellationToken ct)
     {
         try
         {
+            var normalizedLanguage = NormalizeLanguage(language);
             var endpoint = $"{_options.BaseUrl.TrimEnd('/')}/hangman/hint";
+
+            logger.LogInformation("Generating hangman hint in language: {Language}", normalizedLanguage);
 
             var request = new HangmanHintRequest
             {
@@ -103,7 +130,7 @@ public sealed class AiCoreService(
                     .ToList(),
                 HintNumber = Math.Clamp(hintNumber, 0, 2),
                 AttemptsLeft = 6,
-                Language = "nl"
+                Language = normalizedLanguage
             };
 
             var response = await httpClient.PostAsJsonAsync(endpoint, request, ct);
@@ -136,6 +163,23 @@ public sealed class AiCoreService(
         }
     }
 
+    private static string NormalizeLanguage(string? language)
+    {
+        if (string.IsNullOrWhiteSpace(language))
+        {
+            return "en";
+        }
+
+        var lang = language.Trim().ToLowerInvariant();
+
+        if (lang.StartsWith("nl")) return "nl";
+        if (lang.StartsWith("fr")) return "fr";
+        if (lang.StartsWith("de")) return "de";
+        if (lang.StartsWith("en")) return "en";
+
+        return "en";
+    }
+
     private sealed class GeneratePuzzleRequest
     {
         [JsonPropertyName("room")]
@@ -149,6 +193,9 @@ public sealed class AiCoreService(
 
         [JsonPropertyName("theme_word")]
         public string? ThemeWord { get; set; }
+
+        [JsonPropertyName("language")]
+        public required string Language { get; set; }
     }
 
     private sealed class GeneratePuzzleResponse
@@ -173,12 +220,21 @@ public sealed class AiCoreService(
     {
         [JsonPropertyName("target_word")]
         public string? TargetWord { get; set; }
+
+        [JsonPropertyName("max_attempts")]
+        public int? MaxAttempts { get; set; }
     }
 
     private sealed class NarrativePayload
     {
         [JsonPropertyName("intro")]
         public string? Intro { get; set; }
+
+        [JsonPropertyName("success")]
+        public string? Success { get; set; }
+
+        [JsonPropertyName("failure")]
+        public string? Failure { get; set; }
     }
 
     private sealed class SolutionPayload

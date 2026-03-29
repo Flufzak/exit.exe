@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next";
 
 export default function LanguageSwitch() {
   const { i18n } = useTranslation();
-  const currentLang = i18n.language;
+
+  const currentLang = i18n.language.startsWith("nl") ? "nl" : "en";
 
   function toggleLanguage() {
     const newLang = currentLang === "nl" ? "en" : "nl";

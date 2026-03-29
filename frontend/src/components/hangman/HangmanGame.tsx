@@ -49,10 +49,6 @@ function getFailedAttempts(session: SessionDto | null): number {
     return 0;
   }
 
-  if ("failedAttempts" in session && typeof session.failedAttempts === "number") {
-    return session.failedAttempts;
-  }
-
   return Math.max(0, 6 - getAttemptsLeft(session));
 }
 
@@ -131,9 +127,14 @@ function getGameMasterMessage(
   isLoading: boolean,
   hasTimedOut: boolean,
   timeLeft: number,
+  hasStartedTimer: boolean,
 ): string {
   if (isLoading) {
     return "The dungeon listens... preparing the next phase.";
+  }
+
+  if (!hasStartedTimer) {
+    return "The chamber waits. Your first chosen letter will begin the ritual clock.";
   }
 
   if (hasTimedOut) {
@@ -167,7 +168,15 @@ function getGameMasterMessage(
   return "Choose carefully. Every wrong letter feeds the mechanism.";
 }
 
-function getStatusLabel(status: string, hasTimedOut: boolean): string {
+function getStatusLabel(
+  status: string,
+  hasTimedOut: boolean,
+  hasStartedTimer: boolean,
+): string {
+  if (!hasStartedTimer) {
+    return "READY";
+  }
+
   if (hasTimedOut) {
     return "TIME EXPIRED";
   }
@@ -182,6 +191,7 @@ function getStatusLabel(status: string, hasTimedOut: boolean): string {
 
   return "MECHANISM ACTIVE";
 }
+
 function getNarrativeMessage(
   session: SessionDto | null,
   status: string,
@@ -210,25 +220,12 @@ function getSessionKey(
   story: HangmanStoryViewModel | null,
 ): string {
   const storyKey = story?.slug?.trim() || story?.title?.trim() || "unknown-story";
+  const sessionId =
+    typeof session?.sessionId === "string" && session.sessionId.length > 0
+      ? session.sessionId
+      : "no-session";
 
-  const maskedWord =
-    typeof session?.maskedWord === "string" && session.maskedWord.length > 0
-      ? session.maskedWord
-      : "unknown-word";
-
-  const attemptsLeft =
-    typeof session?.attemptsLeft === "number" ? session.attemptsLeft : 6;
-
-  const guessedLetters = Array.isArray(session?.guessedLetters)
-    ? session.guessedLetters.join("-")
-    : "no-guesses";
-
-  const status =
-    typeof session?.status === "string" && session.status.length > 0
-      ? session.status
-      : "InProgress";
-
-  return `${storyKey}-${maskedWord}-${attemptsLeft}-${guessedLetters}-${status}`;
+  return `${storyKey}-${sessionId}`;
 }
 
 export default function HangmanGame({
@@ -253,6 +250,7 @@ export default function HangmanGame({
 
   const [timeLeft, setTimeLeft] = useState(totalTimeInSeconds);
   const [hasTimedOut, setHasTimedOut] = useState(false);
+  const [hasStartedTimer, setHasStartedTimer] = useState(false);
 
   const clock1AudioRef = useRef<HTMLAudioElement | null>(null);
   const clock2AudioRef = useRef<HTMLAudioElement | null>(null);
@@ -260,14 +258,48 @@ export default function HangmanGame({
   const previousSessionKeyRef = useRef<string | null>(null);
   const activeClockRef = useRef<"clock1" | "clock2" | "none">("none");
   const timeoutSoundPlayedRef = useRef(false);
+  const audioUnlockedRef = useRef(false);
 
   const isFinished = status === "Success" || status === "Failed";
   const isGameOver = isFinished || hasTimedOut;
 
+  function unlockAudio() {
+    if (audioUnlockedRef.current) {
+      return;
+    }
+
+    audioUnlockedRef.current = true;
+
+    const audioElements = [
+      clock1AudioRef.current,
+      clock2AudioRef.current,
+      timeoutAudioRef.current,
+    ];
+
+    for (const audio of audioElements) {
+      if (!audio) {
+        continue;
+      }
+
+      audio.volume = 0;
+
+      audio
+        .play()
+        .then(() => {
+          audio.pause();
+          audio.currentTime = 0;
+          audio.volume = 1;
+        })
+        .catch(() => {
+          audio.volume = 1;
+        });
+    }
+  }
+
   useEffect(() => {
-    clock1AudioRef.current = new Audio("/sfx/clock1.mp3");
-    clock2AudioRef.current = new Audio("/sfx/clock2.mp3");
-    timeoutAudioRef.current = new Audio("/sfx/time-up.mp3");
+    clock1AudioRef.current = new Audio("/assets/sfx/clock1.mp3");
+    clock2AudioRef.current = new Audio("/assets/sfx/clock2.mp3");
+    timeoutAudioRef.current = new Audio("/assets/sfx/time-up.mp3");
 
     if (clock1AudioRef.current) {
       clock1AudioRef.current.loop = true;
@@ -308,8 +340,10 @@ export default function HangmanGame({
     if (isFirstRender || isNewSession) {
       setTimeLeft(totalTimeInSeconds);
       setHasTimedOut(false);
+      setHasStartedTimer(false);
       timeoutSoundPlayedRef.current = false;
       activeClockRef.current = "none";
+      audioUnlockedRef.current = false;
 
       if (clock1AudioRef.current) {
         clock1AudioRef.current.pause();
@@ -331,7 +365,7 @@ export default function HangmanGame({
   }, [sessionKey, totalTimeInSeconds]);
 
   useEffect(() => {
-    if (isFinished || hasTimedOut || timeLeft <= 0) {
+    if (!hasStartedTimer || isFinished || hasTimedOut || timeLeft <= 0) {
       if (clock1AudioRef.current) {
         clock1AudioRef.current.pause();
         clock1AudioRef.current.currentTime = 0;
@@ -363,18 +397,25 @@ export default function HangmanGame({
       const audioToPlay =
         nextClock === "clock2" ? clock2AudioRef.current : clock1AudioRef.current;
 
+      if (!audioToPlay) {
+        activeClockRef.current = "none";
+        return;
+      }
+
       audioToPlay
-        ?.play()
+        .play()
+        .then(() => {
+          activeClockRef.current = nextClock;
+        })
         .catch(() => {
           console.warn("Clock audio playback was blocked by the browser.");
+          activeClockRef.current = "none";
         });
-
-      activeClockRef.current = nextClock;
     }
-  }, [hasTimedOut, isFinished, timeLeft]);
+  }, [hasStartedTimer, hasTimedOut, isFinished, timeLeft]);
 
   useEffect(() => {
-    if (isFinished || hasTimedOut || timeLeft <= 0) {
+    if (!hasStartedTimer || isFinished || hasTimedOut) {
       return;
     }
 
@@ -391,10 +432,10 @@ export default function HangmanGame({
     }, 1000);
 
     return () => window.clearInterval(timer);
-  }, [hasTimedOut, isFinished, timeLeft]);
+  }, [hasStartedTimer, hasTimedOut, isFinished]);
 
   useEffect(() => {
-    if (!hasTimedOut || timeoutSoundPlayedRef.current) {
+    if (!hasStartedTimer || !hasTimedOut || timeoutSoundPlayedRef.current) {
       return;
     }
 
@@ -417,8 +458,8 @@ export default function HangmanGame({
       .catch(() => {
         console.warn("Timeout audio playback was blocked by the browser.");
       });
-  }, [hasTimedOut]);
-  console.log("SESSION DEBUG", session);
+  }, [hasStartedTimer, hasTimedOut]);
+
   const timerValue = formatSeconds(timeLeft);
   const narrativeMessage = getNarrativeMessage(session, status);
   const gameMasterMessage =
@@ -430,8 +471,9 @@ export default function HangmanGame({
       isLoading,
       hasTimedOut,
       timeLeft,
+      hasStartedTimer,
     );
-  const statusLabel = getStatusLabel(status, hasTimedOut);
+  const statusLabel = getStatusLabel(status, hasTimedOut, hasStartedTimer);
 
   return (
     <section className="hangman-screen">
@@ -527,11 +569,17 @@ export default function HangmanGame({
 
                       return (
                         <button
-                          className={`hangman-key ${isUsed ? "hangman-key-used" : ""
-                            }`}
+                          className={`hangman-key ${isUsed ? "hangman-key-used" : ""}`}
                           disabled={isLoading || isGameOver || isUsed}
                           key={letter}
-                          onClick={() => onGuess(letter)}
+                          onClick={() => {
+                            if (!hasStartedTimer) {
+                              unlockAudio();
+                              setHasStartedTimer(true);
+                            }
+
+                            onGuess(letter);
+                          }}
                           type="button"
                         >
                           {letter}
@@ -565,13 +613,15 @@ export default function HangmanGame({
           </main>
 
           <aside className="hangman-panel hangman-panel-right">
-            <div className="hangman-panel-header">AI Game Master</div>
+            <div className="hangman-panel-header">Ritual Voice</div>
 
             <div className="hangman-master-card">
-              <div className="hangman-master-avatar">AI</div>
+              <div className="hangman-master-seal" aria-hidden="true">
+                ✠
+              </div>
 
               <div className="hangman-master-content">
-                <div className="hangman-master-title">Kazimir Protocol</div>
+                <div className="hangman-master-title">The Whisperer</div>
                 <p className="hangman-master-message">{gameMasterMessage}</p>
               </div>
             </div>

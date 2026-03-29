@@ -6,8 +6,7 @@ using MediatR;
 
 namespace Exit.exe.Application.Features.Sessions.Commands;
 
-public sealed record StartSessionCommand(string GameType, string UserId) : IRequest<SessionDto>;
-
+public sealed record StartSessionCommand(string GameType, string UserId, string? Language) : IRequest<SessionDto>;
 public sealed class StartSessionCommandHandler(
     IPuzzleRepository puzzleRepository,
     ISessionRepository sessionRepository,
@@ -17,17 +16,29 @@ public sealed class StartSessionCommandHandler(
     {
         Puzzle puzzle;
 
-        // Try AI-generated puzzle first, fall back to seed data
-        var aiResult = await aiService.GenerateHangmanPuzzleAsync(cancellationToken);
+        var aiResult = await aiService.GenerateHangmanPuzzleAsync(request.Language, cancellationToken);
 
         if (aiResult is not null)
         {
             var payload = new HangmanPayload
             {
-                Word = aiResult.Word,
                 Description = aiResult.Description,
                 Category = aiResult.Category,
-                MaxAttempts = 6
+                Narrative = new HangmanNarrative
+                {
+                    Intro = aiResult.Narrative.Intro,
+                    Success = aiResult.Narrative.Success,
+                    Failure = aiResult.Narrative.Failure
+                },
+                Mechanics = new HangmanMechanics
+                {
+                    TargetWord = aiResult.Word,
+                    MaxAttempts = aiResult.MaxAttempts
+                },
+                Solution = new HangmanSolution
+                {
+                    Word = aiResult.Word
+                }
             };
 
             puzzle = new Puzzle
@@ -42,7 +53,6 @@ public sealed class StartSessionCommandHandler(
         }
         else
         {
-            // Fallback: pick a random seed puzzle
             var puzzles = await puzzleRepository.GetByGameTypeAsync(request.GameType, cancellationToken);
 
             if (puzzles.Count == 0)
@@ -61,7 +71,7 @@ public sealed class StartSessionCommandHandler(
             PuzzleId = puzzle.Id,
             Status = SessionStatus.InProgress,
             GuessedLetters = string.Empty,
-            AttemptsLeft = sessionPayload.MaxAttempts,
+            AttemptsLeft = sessionPayload.Mechanics.MaxAttempts,
             HintsUsed = 0,
             StartedAtUtc = DateTime.UtcNow
         };
@@ -69,7 +79,7 @@ public sealed class StartSessionCommandHandler(
         sessionRepository.Add(session);
         await sessionRepository.SaveChangesAsync(cancellationToken);
 
-        var maskedWord = HangmanHelper.MaskWord(sessionPayload.Word, []);
+        var maskedWord = HangmanHelper.MaskWord(sessionPayload.Mechanics.TargetWord, []);
 
         return new SessionDto(
             session.Id,
@@ -78,7 +88,10 @@ public sealed class StartSessionCommandHandler(
             session.AttemptsLeft,
             [],
             session.Status.ToString(),
-            null);
+            new SessionNarrativeDto(
+                sessionPayload.Narrative.Intro,
+                sessionPayload.Narrative.Success,
+                sessionPayload.Narrative.Failure
+            ));
     }
-
 }

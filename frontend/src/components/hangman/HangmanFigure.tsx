@@ -1,12 +1,12 @@
-type HangmanProps = {
+type HangmanFigureProps = {
   failedAttempts: number;
   maxAttempts?: number;
 };
 
-export default function Hangman({
+export default function HangmanFigure({
   failedAttempts,
   maxAttempts = 6,
-}: HangmanProps) {
+}: HangmanFigureProps) {
   const stroke = 4;
 
   const accent = "var(--accent)";
@@ -79,46 +79,19 @@ export default function Hangman({
   ];
 
   return (
-    <>
-      <style>
-        {`
-        .hangman-draw-line {
-          stroke-dasharray: 120;
-          stroke-dashoffset: 120;
-          animation: hangmanDraw 0.35s ease forwards;
-          filter: drop-shadow(0 0 6px rgb(var(--accent-rgb) / 0.6));
-        }
+    <svg
+      className="hangman-figure-svg"
+      viewBox="0 0 200 250"
+      preserveAspectRatio="xMidYMid meet"
+      aria-label="Hangman"
+      role="img"
+    >
+      <line x1="30" y1="230" x2="130" y2="230" stroke={gallows} strokeWidth={stroke} />
+      <line x1="70" y1="230" x2="70" y2="30" stroke={gallows} strokeWidth={stroke} />
+      <line x1="70" y1="30" x2="140" y2="30" stroke={gallows} strokeWidth={stroke} />
+      <line x1="140" y1="30" x2="140" y2="50" stroke={gallows} strokeWidth={stroke} />
 
-        .hangman-draw-circle {
-          stroke-dasharray: 126;
-          stroke-dashoffset: 126;
-          animation: hangmanDraw 0.4s ease forwards;
-          filter: drop-shadow(0 0 6px rgb(var(--accent-rgb) / 0.6));
-        }
-
-        @keyframes hangmanDraw {
-          to {
-            stroke-dashoffset: 0;
-          }
-        }
-        `}
-      </style>
-
-      <svg
-        width="200"
-        height="250"
-        viewBox="0 0 200 250"
-        aria-label="Hangman"
-      >
-        {/* gallows */}
-        <line x1="30" y1="230" x2="130" y2="230" stroke={gallows} strokeWidth={stroke} />
-        <line x1="70" y1="230" x2="70" y2="30" stroke={gallows} strokeWidth={stroke} />
-        <line x1="70" y1="30" x2="140" y2="30" stroke={gallows} strokeWidth={stroke} />
-        <line x1="140" y1="30" x2="140" y2="50" stroke={gallows} strokeWidth={stroke} />
-
-        {/* body */}
-        {parts.slice(0, failedAttempts)}
-      </svg>
-    </>
+      {parts.slice(0, failedAttempts)}
+    </svg>
   );
 }

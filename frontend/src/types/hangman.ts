@@ -31,6 +31,7 @@ export type HintResultDto = {
 
 export type StartSessionRequest = {
   gameType: string;
+  language: string;
 };
 
 export type GuessRequest = {

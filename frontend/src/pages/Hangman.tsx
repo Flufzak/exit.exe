@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import HangmanGame from "../components/hangman/HangmanGame";
 import {
   getHangmanSession,
@@ -20,12 +21,18 @@ function mergeGuessResultIntoSession(
     attemptsLeft: result.attemptsLeft,
     guessedLetters: result.guessedLetters,
     status: result.status,
+    narrative: previous.narrative,
   };
+}
+
+function normalizeLanguage(language: string): "nl" | "en" {
+  return language.startsWith("nl") ? "nl" : "en";
 }
 
 export default function HangmanPage() {
   const [searchParams] = useSearchParams();
   const storyId = searchParams.get("story") ?? "kazimir";
+  const { i18n } = useTranslation();
 
   const { stories, loading: storiesLoading, error: storiesError } = useStories();
 
@@ -40,13 +47,23 @@ export default function HangmanPage() {
   const [sessionError, setSessionError] = useState<string | null>(null);
   const [hint, setHint] = useState<string | null>(null);
 
+  const hasStartedSessionRef = useRef(false);
+
   const startNewSession = async () => {
     setSessionLoading(true);
     setSessionError(null);
     setHint(null);
 
     try {
-      const result = await startHangmanSession({ gameType: "hangman" });
+      const language = normalizeLanguage(i18n.language);
+
+      console.log("Starting hangman session in language:", language);
+
+      const result = await startHangmanSession({
+        gameType: "hangman",
+        language,
+      });
+
       setSession(result);
     } catch (err) {
       const message =
@@ -61,6 +78,11 @@ export default function HangmanPage() {
   };
 
   useEffect(() => {
+    if (hasStartedSessionRef.current) {
+      return;
+    }
+
+    hasStartedSessionRef.current = true;
     void startNewSession();
   }, []);
 

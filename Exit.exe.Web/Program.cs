@@ -63,7 +63,7 @@ services.Configure<AiCoreOptions>(config.GetSection("AI:Core"));
 
 services.AddHttpClient<IAiService, AiCoreService>(client =>
 {
-    client.Timeout = TimeSpan.FromSeconds(30);
+    client.Timeout = TimeSpan.FromSeconds(300);
 });
 
 // ---- DB ----

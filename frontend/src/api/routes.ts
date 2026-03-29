@@ -1,6 +1,13 @@
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
-export const authRoutes = {
-  google: `${API_URL}/api/auth/login/google`,
-  facebook: `${API_URL}/api/auth/login/facebook`,
-};
+export function googleLoginUrl(returnUrl?: string): string {
+  const base = `${API_URL}/api/auth/login/google`;
+  const url = returnUrl ?? window.location.href;
+  return `${base}?returnUrl=${encodeURIComponent(url)}`;
+}
+
+export function facebookLoginUrl(returnUrl?: string): string {
+  const base = `${API_URL}/api/auth/login/facebook`;
+  const url = returnUrl ?? window.location.href;
+  return `${base}?returnUrl=${encodeURIComponent(url)}`;
+}

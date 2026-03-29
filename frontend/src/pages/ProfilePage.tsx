@@ -66,7 +66,9 @@ export default function ProfilePage() {
         <Card>
           <Label>{t("average-score")}</Label>
           <Value>
-            {stats.averageScore ? `${Math.round(stats.averageScore)}%` : "-"}
+            {stats.averageScore !== null
+              ? `${Math.round(stats.averageScore)}%`
+              : "-"}
           </Value>
         </Card>
 

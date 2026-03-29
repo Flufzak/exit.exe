@@ -17,14 +17,18 @@ public sealed class AiProviderOptions
 public sealed class OpenAiService(HttpClient httpClient, IOptions<AiProviderOptions> options, ILogger<OpenAiService> logger) : IAiService
 {
     private readonly AiProviderOptions _options = options.Value;
-    public async Task<AiPuzzleResult?> GenerateHangmanPuzzleAsync(CancellationToken ct)
+
+    public async Task<AiPuzzleResult?> GenerateHangmanPuzzleAsync(string? language, CancellationToken ct)
     {
-        var prompt = """
-            Generate a single English word for a Hangman game in an escape-room setting themed around a dark ancient sect called "Kazimir".
-            The word should be between 5 and 10 letters, using only A-Z characters.
-            Respond ONLY with valid JSON in this exact format, no extra text:
-            {"word":"EXAMPLE","description":"A short clue about the word","category":"CategoryName"}
-            """;
+        var normalizedLanguage = NormalizeLanguage(language);
+        var promptLanguage = MapPromptLanguage(normalizedLanguage);
+
+        var prompt = $$"""
+    Generate a single {{promptLanguage}} word for a Hangman game in an escape-room setting themed around a dark ancient sect called "Kazimir".
+    The word should be between 5 and 10 letters, using only A-Z characters.
+    Respond ONLY with valid JSON in this exact format, no extra text:
+    {"word":"EXAMPLE","description":"A short clue about the word","category":"CategoryName"}
+    """;
 
         try
         {
@@ -42,7 +46,16 @@ public sealed class OpenAiService(HttpClient httpClient, IOptions<AiProviderOpti
                 return null;
             }
 
-            return new AiPuzzleResult(word, result.Description ?? "Mystery word", result.Category ?? "General");
+            return new AiPuzzleResult(
+                word,
+                result.Description ?? "Mystery word",
+                result.Category ?? "General",
+                new AiPuzzleNarrativeResult(
+                    "A dark presence watches your every move. Guess wisely.",
+                    "You uncovered the truth hidden in the word. The path forward opens.",
+                    "The final bell tolls. The ritual completes before you can escape."
+                ),
+                6);
         }
         catch (Exception ex)
         {
@@ -57,12 +70,16 @@ public sealed class OpenAiService(HttpClient httpClient, IOptions<AiProviderOpti
         string description,
         IReadOnlyCollection<string> guessedLetters,
         int hintNumber,
+        string? language,
         CancellationToken ct)
     {
+        var normalizedLanguage = NormalizeLanguage(language);
+        var promptLanguage = MapPromptLanguage(normalizedLanguage);
         var guessed = guessedLetters.Count > 0 ? string.Join(", ", guessedLetters) : "none";
 
         var prompt = $"""
             You are a hint generator for a Hangman game in an escape-room with a dark ancient sect theme called "Kazimir".
+            Write the hint in {promptLanguage}.
             The secret word is "{word}" (category: {category}, description: {description}).
             The player has already guessed these letters: {guessed}.
             This is hint number {hintNumber + 1} out of 3.
@@ -108,8 +125,36 @@ public sealed class OpenAiService(HttpClient httpClient, IOptions<AiProviderOpti
             return null;
         }
 
-        var completion = await response.Content.ReadFromJsonAsync<ChatCompletionResponse>(ct);
+        var completion = await response.Content.ReadFromJsonAsync<ChatCompletionResponse>(cancellationToken: ct);
         return completion?.Choices?.FirstOrDefault()?.Message?.Content?.Trim();
+    }
+
+    private static string NormalizeLanguage(string? language)
+    {
+        if (string.IsNullOrWhiteSpace(language))
+        {
+            return "en";
+        }
+
+        var lang = language.Trim().ToLowerInvariant();
+
+        if (lang.StartsWith("nl")) return "nl";
+        if (lang.StartsWith("fr")) return "fr";
+        if (lang.StartsWith("de")) return "de";
+        if (lang.StartsWith("en")) return "en";
+
+        return "en";
+    }
+
+    private static string MapPromptLanguage(string language)
+    {
+        return language switch
+        {
+            "nl" => "Dutch",
+            "fr" => "French",
+            "de" => "German",
+            _ => "English"
+        };
     }
 
     private sealed class AiPuzzleJson

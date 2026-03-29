@@ -8,7 +8,6 @@ using Exit.exe.Web.Infrastructure;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 using System.Reflection;
 
@@ -59,48 +58,13 @@ services.AddValidatorsFromAssembly(applicationAssembly);
 services.AddScoped<IPuzzleRepository, PuzzleRepository>();
 services.AddScoped<ISessionRepository, SessionRepository>();
 
-// ---- AI (Ollama / OpenAI) ----
-var aiProvider = config["AI:Provider"]?.ToLowerInvariant();
-var openAiKey = config["OpenAI:ApiKey"];
+// ---- AI Core (primary) ----
+services.Configure<AiCoreOptions>(config.GetSection("AI:Core"));
 
-if (aiProvider == "ollama")
+services.AddHttpClient<IAiService, AiCoreService>(client =>
 {
-    // Ollama: free, local — no API key needed
-    var ollamaOptions = new AiProviderOptions
-    {
-        BaseUrl = config["AI:Ollama:BaseUrl"] ?? "http://localhost:11434",
-        Model = config["AI:Ollama:Model"] ?? "llama3.2",
-        Provider = "ollama"
-    };
-
-    services.AddSingleton(Options.Create(ollamaOptions));
-    services.AddHttpClient<IAiService, OpenAiService>(client =>
-    {
-        client.Timeout = TimeSpan.FromSeconds(30);
-    });
-}
-else if (!string.IsNullOrWhiteSpace(openAiKey))
-{
-    // OpenAI: requires API key + credits
-    var openAiOptions = new AiProviderOptions
-    {
-        BaseUrl = "https://api.openai.com",
-        Model = config["AI:OpenAI:Model"] ?? "gpt-4o-mini",
-        Provider = "openai"
-    };
-
-    services.AddSingleton(Options.Create(openAiOptions));
-    services.AddHttpClient<IAiService, OpenAiService>(client =>
-    {
-        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {openAiKey}");
-        client.Timeout = TimeSpan.FromSeconds(15);
-    });
-}
-else
-{
-    // No AI configured: seed data is always used
-    services.AddSingleton<IAiService, DisabledAiService>();
-}
+    client.Timeout = TimeSpan.FromSeconds(300);
+});
 
 // ---- DB ----
 var conn = config.GetConnectionString("DefaultConnection");

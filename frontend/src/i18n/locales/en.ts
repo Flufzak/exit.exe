@@ -12,6 +12,11 @@ export default {
   "available-stories": "Available stories",
   "view-all": "View all",
   upcoming: "Upcoming",
+  "hints-used": "Hints used",
+  time: "Time",
+  score: "Score",
+  "view-profile": "View profile",
+  "start-story": "Start story",
 
   //stories
   "story-kazimir-title": "Kazimir",
@@ -45,7 +50,6 @@ export default {
   "win-rate": "Win rate",
   "best-score": "Best score",
   "average-score": "Average score",
-  "hints-used": "Hints used",
   "last-played": "Last played",
 
   //notfound
@@ -56,4 +60,11 @@ export default {
     "Return to safe grounds, or continue and discover what is hidden.",
   "start-adventure": "Start an adventure",
   "return-home": "Return home",
+
+  //lost
+  "not-escaped": "YOU DID NOT ESCAPE",
+  bells:
+    "The bell tolls again. This time, it does not stop. The torches burn lower, shadows stretching across the stone as they close in.",
+  "priests-do-not-rush":
+    "The priests do not rush. They never do. Whatever Kazimir promised them, it will be paid for tonight.",
 };

@@ -28,13 +28,12 @@ public sealed class SubmitGuessCommandHandler(
 
         var guessedLetters = HangmanHelper.ParseGuessedLetters(session.GuessedLetters);
 
-        // Already guessed this letter
         if (guessedLetters.Contains(letter, StringComparer.OrdinalIgnoreCase))
             throw new InvalidOperationException($"Letter '{letter}' has already been guessed.");
 
         guessedLetters.Add(letter);
 
-        var word = payload.Word.ToUpperInvariant();
+        var word = payload.Mechanics.TargetWord.ToUpperInvariant();
         var correct = word.Contains(letter, StringComparison.OrdinalIgnoreCase);
 
         if (!correct)
@@ -44,12 +43,11 @@ public sealed class SubmitGuessCommandHandler(
 
         session.GuessedLetters = string.Join(",", guessedLetters);
 
-        // Check win/loss
         if (HangmanHelper.IsWordFullyGuessed(word, guessedLetters))
         {
             session.Status = SessionStatus.Success;
             session.CompletedAtUtc = DateTime.UtcNow;
-            session.Score = CalculateScore(session.AttemptsLeft, session.HintsUsed, payload.MaxAttempts);
+            session.Score = CalculateScore(session.AttemptsLeft, session.HintsUsed, payload.Mechanics.MaxAttempts);
         }
         else if (session.AttemptsLeft <= 0)
         {
@@ -72,7 +70,6 @@ public sealed class SubmitGuessCommandHandler(
 
     private static int CalculateScore(int attemptsLeft, int hintsUsed, int maxAttempts)
     {
-        // Base score: 100, minus penalty for wrong guesses and hints
         var wrongGuesses = maxAttempts - attemptsLeft;
         var score = Math.Max(0, 100 - (wrongGuesses * 10) - (hintsUsed * 15));
         return score;

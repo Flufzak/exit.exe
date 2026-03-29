@@ -12,6 +12,11 @@ export default {
   "available-stories": "Beschikbare verhalen",
   "view-all": "Alles bekijken",
   upcoming: "Binnenkort",
+  "hints-used": "Hints gebruikt",
+  time: "Tijd",
+  score: "Score",
+  "view-profile": "Profiel bekijken",
+  "start-story": "Verhaal starten",
 
   //verhalen
   "story-kazimir-title": "Kazimir",
@@ -45,7 +50,6 @@ export default {
   "win-rate": "Winpercentage",
   "best-score": "Hoogste score",
   "average-score": "Gemiddelde score",
-  "hints-used": "Hints gebruikt",
   "last-played": "Laatst gespeeld",
 
   //not found
@@ -56,4 +60,11 @@ export default {
     "Keer terug naar veilige grond, of dwaal verder en ontdek wat er nog verborgen ligt.",
   "start-adventure": "Start een avontuur",
   "return-home": "Terug naar startpagina",
+
+  //verloren
+  "not-escaped": "JE BENT NIET ONTSNAPT",
+  bells:
+    "De klok luidt opnieuw. Deze keer stopt ze niet. De fakkels branden lager, terwijl schaduwen zich over de stenen uitstrekken en dichterbij kruipen.",
+  "priests-do-not-rush":
+    "De priesters haasten zich niet. Dat doen ze nooit. Wat Kazimir hun beloofde, zal vannacht worden opgeëist.",
 };

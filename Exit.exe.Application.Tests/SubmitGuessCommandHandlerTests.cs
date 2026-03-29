@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Exit.exe.Application.Features.Sessions.Commands;
 using Exit.exe.Application.Features.Sessions.Validators;
 using Exit.exe.Domain.Entities;
@@ -20,12 +21,34 @@ public class SubmitGuessCommandHandlerTests
         var puzzleId = Guid.NewGuid();
         var sessionId = Guid.NewGuid();
 
+        var payload = JsonSerializer.Serialize(new
+        {
+            category = "cat",
+            description = "desc",
+            narrative = new
+            {
+                intro = "Intro",
+                success = "Success",
+                failure = "Failure"
+            },
+            mechanics = new
+            {
+                targetWord = word,
+                maxAttempts = 6
+            },
+            solution = new
+            {
+                word = word
+            }
+        });
+
         db.Puzzles.Add(new Puzzle
         {
             Id = puzzleId,
             GameType = "hangman",
-            Payload = $$$"""{"word":"{{{word}}}","description":"desc","category":"cat","maxAttempts":6}"""
+            Payload = payload
         });
+
         db.GameSessions.Add(new GameSession
         {
             Id = sessionId,
@@ -35,6 +58,7 @@ public class SubmitGuessCommandHandlerTests
             AttemptsLeft = attemptsLeft,
             GuessedLetters = guessedLetters
         });
+
         db.SaveChanges();
         return (sessionId, puzzleId);
     }

@@ -15,6 +15,7 @@ export default {
   "hints-used": "Hints used",
   time: "Time",
   score: "Score",
+  "view-profile": "View profile",
 
   //stories
   "story-kazimir-title": "Kazimir",

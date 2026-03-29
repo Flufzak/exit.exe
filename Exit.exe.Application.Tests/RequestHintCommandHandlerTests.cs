@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Exit.exe.Application.Features.Sessions.Commands;
 using Exit.exe.Domain.Entities;
 using Exit.exe.Repository.Data.App;
@@ -12,17 +13,40 @@ public class RequestHintCommandHandlerTests
     private static Guid SeedSession(
         AppDbContext db,
         int hintsUsed = 0,
-        SessionStatus status = SessionStatus.InProgress)
+        SessionStatus status = SessionStatus.InProgress,
+        string guessedLetters = "")
     {
         var puzzleId = Guid.NewGuid();
         var sessionId = Guid.NewGuid();
+
+        var payload = JsonSerializer.Serialize(new
+        {
+            category = "Names",
+            description = "Ancient sect",
+            narrative = new
+            {
+                intro = "Intro",
+                success = "Success",
+                failure = "Failure"
+            },
+            mechanics = new
+            {
+                targetWord = "KAZIMIR",
+                maxAttempts = 6
+            },
+            solution = new
+            {
+                word = "KAZIMIR"
+            }
+        });
 
         db.Puzzles.Add(new Puzzle
         {
             Id = puzzleId,
             GameType = "hangman",
-            Payload = """{"word":"KAZIMIR","description":"Ancient sect","category":"Names","maxAttempts":6}"""
+            Payload = payload
         });
+
         db.GameSessions.Add(new GameSession
         {
             Id = sessionId,
@@ -30,8 +54,10 @@ public class RequestHintCommandHandlerTests
             PuzzleId = puzzleId,
             Status = status,
             AttemptsLeft = 6,
-            HintsUsed = hintsUsed
+            HintsUsed = hintsUsed,
+            GuessedLetters = guessedLetters
         });
+
         db.SaveChanges();
         return sessionId;
     }
@@ -68,7 +94,7 @@ public class RequestHintCommandHandlerTests
     public async Task Handle_ThirdHint_RevealsLetter()
     {
         using var db = TestDbContextFactory.Create();
-        var sessionId = SeedSession(db, hintsUsed: 2);
+        var sessionId = SeedSession(db, hintsUsed: 2, guessedLetters: "A,Z,I");
         var handler = new RequestHintCommandHandler(new SessionRepository(db), new AlwaysFallbackAiService());
 
         var result = await handler.Handle(

@@ -10,7 +10,7 @@ public class ValidatorTests
     public async Task StartSession_EmptyGameType_Fails()
     {
         var validator = new StartSessionCommandValidator();
-        var command = new StartSessionCommand("story-1", "user-1", "nl");
+        var command = new StartSessionCommand("", "user-1", "nl");
 
         var result = await validator.ValidateAsync(command);
 

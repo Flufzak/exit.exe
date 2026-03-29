@@ -37,11 +37,40 @@ public sealed class HangmanNarrative
 
 public sealed class HangmanMechanics
 {
+    private string _targetWord = string.Empty;
+    private int _maxAttempts = 6;
+
+    [JsonPropertyName("targetWord")]
+    public string TargetWord
+    {
+        get => _targetWord;
+        set => _targetWord = value ?? string.Empty;
+    }
+
+    [JsonPropertyName("maxAttempts")]
+    public int MaxAttempts
+    {
+        get => _maxAttempts;
+        set => _maxAttempts = value;
+    }
+
     [JsonPropertyName("target_word")]
-    public string TargetWord { get; set; } = string.Empty;
+    public string TargetWordSnake
+    {
+        set
+        {
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                _targetWord = value;
+            }
+        }
+    }
 
     [JsonPropertyName("max_attempts")]
-    public int MaxAttempts { get; set; } = 6;
+    public int MaxAttemptsSnake
+    {
+        set => _maxAttempts = value;
+    }
 }
 
 public sealed class HangmanSolution

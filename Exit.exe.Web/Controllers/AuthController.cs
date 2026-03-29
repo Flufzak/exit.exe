@@ -21,10 +21,39 @@ public sealed class AuthController(
     [AllowAnonymous]
     public IActionResult LoginGoogle([FromQuery] string? returnUrl = null)
     {
-        returnUrl ??= ResolveReturnUrl();
+        returnUrl = ValidateReturnUrl(returnUrl) ?? ResolveReturnUrl();
         var callback = Url.Action(nameof(GoogleCallback), "Auth", new { returnUrl });
         var props = signInManager.ConfigureExternalAuthenticationProperties("Google", callback);
         return Challenge(props, "Google");
+    }
+
+    private string? ValidateReturnUrl(string? returnUrl)
+    {
+        if (string.IsNullOrWhiteSpace(returnUrl))
+            return null;
+
+        if (Url.IsLocalUrl(returnUrl))
+            return returnUrl;
+
+        if (Uri.TryCreate(returnUrl, UriKind.Absolute, out var uri) && IsAllowedOrigin(uri))
+            return returnUrl;
+
+        return null;
+    }
+
+    private bool IsAllowedOrigin(Uri uri)
+    {
+        var allowedOrigins = configuration.GetSection("Auth:AllowedReturnUrlPrefixes")
+            .GetChildren()
+            .Select(c => c.Value)
+            .Where(v => !string.IsNullOrWhiteSpace(v))
+            .Select(v => Uri.TryCreate(v, UriKind.Absolute, out var u) ? u : null)
+            .Where(u => u is not null)
+            .Cast<Uri>();
+
+        return allowedOrigins.Any(allowed =>
+            Uri.Compare(allowed, uri, UriComponents.SchemeAndServer, UriFormat.Unescaped,
+                StringComparison.OrdinalIgnoreCase) == 0);
     }
 
     private string ResolveReturnUrl()
@@ -33,13 +62,15 @@ public sealed class AuthController(
         if (!string.IsNullOrWhiteSpace(referer) && Uri.TryCreate(referer, UriKind.Absolute, out var refUri))
         {
             // Came from Scalar on the same host → redirect back to Scalar
-            if (refUri.AbsolutePath.StartsWith("/scalar", StringComparison.OrdinalIgnoreCase))
+            if (refUri.AbsolutePath.StartsWith("/scalar", StringComparison.OrdinalIgnoreCase)
+                && string.Equals(refUri.Scheme, Request.Scheme, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(refUri.Host, Request.Host.Host, StringComparison.OrdinalIgnoreCase))
+            {
                 return refUri.GetLeftPart(UriPartial.Path);
+            }
 
             // Came from an allowed SPA origin → redirect back there
-            var allowed = configuration.GetSection("Auth:AllowedReturnUrlPrefixes")
-                .GetChildren().Select(c => c.Value).Where(v => v is not null);
-            if (allowed.Any(prefix => referer.StartsWith(prefix!, StringComparison.OrdinalIgnoreCase)))
+            if (IsAllowedOrigin(refUri))
                 return referer;
         }
 
@@ -52,7 +83,7 @@ public sealed class AuthController(
     [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<IActionResult> GoogleCallback([FromQuery] string? returnUrl = null)
     {
-        returnUrl ??= DefaultReturnUrl;
+        returnUrl = ValidateReturnUrl(returnUrl) ?? DefaultReturnUrl;
         var info = await signInManager.GetExternalLoginInfoAsync();
         if (info is null)
             return Redirect(returnUrl);

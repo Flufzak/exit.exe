@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { Story } from "../../types/story";
 import { useTranslation } from "react-i18next";
+import AppButton from "../ui/AppButton";
+import { useNavigate } from "react-router-dom";
 
 type Props = Story;
 
@@ -12,6 +14,7 @@ const storyImages: Record<string, string> = {
 export default function StoryCard({ id, duration, status, type }: Props) {
   const imageUrl = storyImages[id];
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   return (
     <Card $type={type}>
@@ -26,14 +29,19 @@ export default function StoryCard({ id, duration, status, type }: Props) {
         <Description>{t(`story-${id}-description`)}</Description>
 
         {type === "available" && (
-          <Meta>
-            {duration && <span>{duration}</span>}
-            {status && (
-              <Status>
-                {t(`status-${status.toLowerCase().replace(" ", "-")}`)}
-              </Status>
-            )}
-          </Meta>
+          <MetaRow>
+            <Meta>
+              {duration && <span>{duration}</span>}
+              {status && (
+                <Status>
+                  {t(`status-${status.toLowerCase().replace(" ", "-")}`)}
+                </Status>
+              )}
+            </Meta>
+            <AppButton onClick={() => navigate("/hangman")}>
+              {t("start-story")}
+            </AppButton>
+          </MetaRow>
         )}
 
         {type === "upcoming" && (
@@ -92,8 +100,16 @@ const Description = styled.p`
   color: var(--text-secondary);
 `;
 
-const Meta = styled.div`
+const MetaRow = styled.div`
   margin-top: 1.5rem;
+
+  display: flex;
+  align-items: center;
+
+  gap: 1rem;
+`;
+
+const Meta = styled.div`
   display: flex;
   gap: 1.5rem;
   font-size: 0.9rem;

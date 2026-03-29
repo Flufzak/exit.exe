@@ -16,6 +16,7 @@ export default {
   time: "Tijd",
   score: "Score",
   "view-profile": "Profiel bekijken",
+  "start-story": "Verhaal starten",
 
   //verhalen
   "story-kazimir-title": "Kazimir",

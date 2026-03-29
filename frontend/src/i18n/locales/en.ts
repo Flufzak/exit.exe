@@ -16,6 +16,7 @@ export default {
   time: "Time",
   score: "Score",
   "view-profile": "View profile",
+  "start-story": "Start story",
 
   //stories
   "story-kazimir-title": "Kazimir",

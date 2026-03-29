@@ -93,6 +93,8 @@ public sealed class StartSessionCommandHandler(
             session.AttemptsLeft,
             [],
             session.Status.ToString(),
+            session.HintsUsed,
+            session.Score,
             new SessionNarrativeDto(
                 sessionPayload.Narrative.Intro,
                 sessionPayload.Narrative.Success,

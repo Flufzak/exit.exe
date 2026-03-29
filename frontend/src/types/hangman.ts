@@ -13,6 +13,8 @@ export type SessionDto = {
   attemptsLeft: number;
   guessedLetters: string[];
   status: SessionStatus;
+  hintsUsed: number;
+  score: number | null;
   narrative?: SessionNarrativeDto | null;
 };
 

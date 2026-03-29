@@ -1,17 +1,89 @@
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import AppButton from "../components/ui/AppButton";
+import { getHangmanSession } from "../api/hangmanApi";
+import type { SessionDto } from "../types/hangman";
+
+type LosePageLocationState = {
+  sessionId?: string;
+  timeLeft?: number;
+};
+
+function formatSeconds(totalSeconds: number): string {
+  const safeValue = Math.max(0, totalSeconds);
+  const minutes = Math.floor(safeValue / 60);
+  const seconds = safeValue % 60;
+
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
 
 export default function LosePage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-
   const location = useLocation();
 
-  const hintsUsed = location.state?.hintsUsed ?? 0;
-  const time = location.state?.time ?? "0:00";
-  const score = location.state?.score ?? 0;
+  const state = (location.state ?? {}) as LosePageLocationState;
+
+  const [session, setSession] = useState<SessionDto | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!state.sessionId) {
+      return;
+    }
+
+    let isMounted = true;
+
+    const loadSession = async () => {
+      setLoading(true);
+
+      try {
+        const result = await getHangmanSession(state.sessionId!);
+
+        if (isMounted) {
+          setSession(result);
+        }
+      } catch (error) {
+        console.error("Could not load lose page session:", error);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadSession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [state.sessionId]);
+
+  const hintsUsed = useMemo(() => {
+    if (!session) {
+      return 0;
+    }
+
+    return typeof session.hintsUsed === "number" ? session.hintsUsed : 0;
+  }, [session]);
+
+  const score = useMemo(() => {
+    if (!session) {
+      return 0;
+    }
+
+    return typeof session.score === "number" ? session.score : 0;
+  }, [session]);
+
+  const time = useMemo(() => {
+    if (typeof state.timeLeft === "number") {
+      return formatSeconds(state.timeLeft);
+    }
+
+    return "0:00";
+  }, [state.timeLeft]);
 
   return (
     <Wrapper>
@@ -28,7 +100,7 @@ export default function LosePage() {
         <Stats>
           <Stat>
             <span>{t("hints-used")}</span>
-            <strong>{hintsUsed}</strong>
+            <strong>{loading ? "..." : hintsUsed}</strong>
           </Stat>
 
           <Stat>
@@ -38,7 +110,7 @@ export default function LosePage() {
 
           <Stat>
             <span>{t("score")}</span>
-            <strong>{score}</strong>
+            <strong>{loading ? "..." : score}</strong>
           </Stat>
         </Stats>
 
@@ -47,7 +119,7 @@ export default function LosePage() {
             {t("return-home")}
           </AppButton>
 
-          <AppButton variant="secondary" onClick={() => navigate("/")}>
+          <AppButton variant="secondary" onClick={() => navigate("/profile")}>
             {t("view-profile")}
           </AppButton>
         </Buttons>
@@ -60,23 +132,17 @@ export default function LosePage() {
 
 const Wrapper = styled.div`
   position: relative;
-
   margin: -1.5rem -2rem;
-
   width: calc(100% + 4rem);
   min-height: calc(100vh - 0px);
-
   overflow: hidden;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   background-image: url("/images/landingImg.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-
   --accent: var(--danger);
   --accent-rgb: 226 109 90;
 `;
@@ -84,24 +150,20 @@ const Wrapper = styled.div`
 const Overlay = styled.div`
   position: absolute;
   inset: 0;
-
   background:
     radial-gradient(circle at center, rgba(0, 0, 0, 0.3), transparent 70%),
     rgba(0, 0, 0, 0.6);
-
   z-index: 1;
 `;
 
 const Content = styled.div`
   position: relative;
   z-index: 2;
-
   min-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   text-align: center;
   padding: 2.5rem;
   gap: 2.2rem;
@@ -122,7 +184,6 @@ const Title = styled.h1`
 
 const Lore = styled.div`
   max-width: 600px;
-
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
@@ -150,7 +211,6 @@ const Stat = styled.div`
   border-radius: 6px;
   background: rgba(0, 0, 0, 0.35);
   min-width: 120px;
-
   backdrop-filter: blur(4px);
 
   span {

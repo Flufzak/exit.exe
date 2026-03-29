@@ -6,6 +6,7 @@ import type { SessionDto } from "../../types/hangman";
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const DEFAULT_DURATION_MINUTES = 4;
 const FINAL_WARNING_SECONDS = 30;
+const MAX_HINTS = 3;
 
 type HangmanStoryViewModel = {
   description?: string | null;
@@ -17,11 +18,13 @@ type HangmanStoryViewModel = {
 
 type HangmanGameProps = {
   error?: string | null;
-  hint?: string | null;
+  hints?: string[];
   isLoading?: boolean;
   onGuess: (letter: string) => void;
   onHint: () => void;
   onRetry: () => void;
+  onTimeUpdate?: (timeLeft: number) => void;
+  onTimeExpired?: () => void;
   session: SessionDto | null;
   story: HangmanStoryViewModel | null;
 };
@@ -80,6 +83,14 @@ function getStatus(session: SessionDto | null): string {
     : "InProgress";
 }
 
+function getHintsUsed(session: SessionDto | null): number {
+  if (!session) {
+    return 0;
+  }
+
+  return typeof session.hintsUsed === "number" ? session.hintsUsed : 0;
+}
+
 function getTitle(story: HangmanStoryViewModel | null): string {
   if (!story) {
     return "UNKNOWN STORY";
@@ -123,7 +134,7 @@ function getDurationMinutes(story: HangmanStoryViewModel | null): number {
 function getGameMasterMessage(
   status: string,
   failedAttempts: number,
-  hint: string | null | undefined,
+  hints: string[],
   isLoading: boolean,
   hasTimedOut: boolean,
   timeLeft: number,
@@ -153,8 +164,8 @@ function getGameMasterMessage(
     return "The final seconds strike like hammers. Move now or be buried here.";
   }
 
-  if (hint) {
-    return `A whisper from the Game Master: ${hint}`;
+  if (hints.length > 0) {
+    return `A whisper from the Game Master: ${hints[hints.length - 1]}`;
   }
 
   if (failedAttempts >= 5) {
@@ -230,11 +241,13 @@ function getSessionKey(
 
 export default function HangmanGame({
   error,
-  hint,
+  hints = [],
   isLoading = false,
   onGuess,
   onHint,
   onRetry,
+  onTimeUpdate,
+  onTimeExpired,
   session,
   story,
 }: HangmanGameProps) {
@@ -243,6 +256,9 @@ export default function HangmanGame({
   const guessedLetters = getGuessedLetters(session);
   const maskedWord = getMaskedWord(session);
   const status = getStatus(session);
+  const hintsUsed = getHintsUsed(session);
+  const hintsRemaining = Math.max(0, MAX_HINTS - hintsUsed);
+  const outOfHints = hintsUsed >= MAX_HINTS;
   const difficulty = getDifficulty(story);
   const durationMinutes = getDurationMinutes(story);
   const totalTimeInSeconds = durationMinutes * 60;
@@ -365,6 +381,10 @@ export default function HangmanGame({
   }, [sessionKey, totalTimeInSeconds]);
 
   useEffect(() => {
+    onTimeUpdate?.(timeLeft);
+  }, [timeLeft, onTimeUpdate]);
+
+  useEffect(() => {
     if (!hasStartedTimer || isFinished || hasTimedOut || timeLeft <= 0) {
       if (clock1AudioRef.current) {
         clock1AudioRef.current.pause();
@@ -460,6 +480,14 @@ export default function HangmanGame({
       });
   }, [hasStartedTimer, hasTimedOut]);
 
+  useEffect(() => {
+    if (!hasTimedOut) {
+      return;
+    }
+
+    onTimeExpired?.();
+  }, [hasTimedOut, onTimeExpired]);
+
   const timerValue = formatSeconds(timeLeft);
   const narrativeMessage = getNarrativeMessage(session, status);
   const gameMasterMessage =
@@ -467,7 +495,7 @@ export default function HangmanGame({
     getGameMasterMessage(
       status,
       failedAttempts,
-      hint,
+      hints,
       isLoading,
       hasTimedOut,
       timeLeft,
@@ -490,6 +518,13 @@ export default function HangmanGame({
             <span className="hangman-topbar-label">Attempts left</span>
             <span className="hangman-topbar-value">{attemptsLeft}</span>
           </div>
+
+          <div className="hangman-topbar-item">
+            <span className="hangman-topbar-label">Hints</span>
+            <span className="hangman-topbar-value">
+              {outOfHints ? "Out of hints" : `${hintsUsed}/${MAX_HINTS}`}
+            </span>
+          </div>
         </div>
 
         <div className="hangman-grid">
@@ -504,6 +539,13 @@ export default function HangmanGame({
               <div className="hangman-side-stat">
                 <span className="hangman-side-stat-label">Failed attempts</span>
                 <span className="hangman-side-stat-value">{failedAttempts}/6</span>
+              </div>
+
+              <div className="hangman-side-stat">
+                <span className="hangman-side-stat-label">Hints remaining</span>
+                <span className="hangman-side-stat-value">
+                  {outOfHints ? "Out of hints" : `${hintsRemaining}/${MAX_HINTS}`}
+                </span>
               </div>
 
               <div className="hangman-side-stat">
@@ -598,13 +640,20 @@ export default function HangmanGame({
                       </span>
                     </div>
 
+                    <div className="hangman-used-letters">
+                      <span className="hangman-used-letters-label">Hints</span>
+                      <span className="hangman-used-letters-value">
+                        {outOfHints ? "Out of hints" : `${hintsUsed}/${MAX_HINTS}`}
+                      </span>
+                    </div>
+
                     <button
                       className="hangman-primary-button"
-                      disabled={isLoading || isGameOver}
+                      disabled={isLoading || isGameOver || outOfHints}
                       onClick={onHint}
                       type="button"
                     >
-                      Request hint
+                      {outOfHints ? "Out of hints" : "Request hint"}
                     </button>
                   </div>
                 </>
@@ -626,10 +675,34 @@ export default function HangmanGame({
               </div>
             </div>
 
-            {hint && !error && !hasTimedOut && (
+            {hints.length > 0 && !error && !hasTimedOut && (
               <div className="hangman-hint-card">
-                <div className="hangman-hint-label">Latest hint</div>
-                <div className="hangman-hint-text">{hint}</div>
+                <div className="hangman-hint-label">Hint history</div>
+
+                <div className="hangman-hint-history-scroll">
+                  {[...hints]
+                    .map((hintText, index) => ({
+                      text: hintText,
+                      hintNumber: index + 1,
+                    }))
+                    .reverse()
+                    .map((item, index, reversedHints) => (
+                      <div
+                        className="hangman-hint-history-item"
+                        key={`${item.hintNumber}-${item.text}`}
+                      >
+                        <strong className="hangman-hint-history-title">
+                          Hint {item.hintNumber}
+                        </strong>
+
+                        <div className="hangman-hint-history-body">{item.text}</div>
+
+                        {index < reversedHints.length - 1 && (
+                          <div className="hangman-hint-history-divider" />
+                        )}
+                      </div>
+                    ))}
+                </div>
               </div>
             )}
           </aside>

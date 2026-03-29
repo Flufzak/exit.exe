@@ -28,6 +28,8 @@ public sealed class GetSessionQueryHandler(
             data.Session.AttemptsLeft,
             guessedLetters,
             data.Session.Status.ToString(),
+            data.Session.HintsUsed,
+            data.Session.Score,
             new SessionNarrativeDto(
                 payload.Narrative.Intro,
                 payload.Narrative.Success,

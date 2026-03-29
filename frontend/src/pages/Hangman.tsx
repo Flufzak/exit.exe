@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import HangmanGame from "../components/hangman/HangmanGame";
 import {
@@ -10,6 +10,9 @@ import {
 } from "../api/hangmanApi";
 import { useStories } from "../hooks/useStories";
 import type { GuessResultDto, SessionDto } from "../types/hangman";
+
+const HANGMAN_DURATION_SECONDS = 240;
+const MAX_HINTS = 3;
 
 function mergeGuessResultIntoSession(
   previous: SessionDto,
@@ -22,6 +25,8 @@ function mergeGuessResultIntoSession(
     guessedLetters: result.guessedLetters,
     status: result.status,
     narrative: previous.narrative,
+    hintsUsed: previous.hintsUsed,
+    score: previous.score,
   };
 }
 
@@ -30,6 +35,7 @@ function normalizeLanguage(language: string): "nl" | "en" {
 }
 
 export default function HangmanPage() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const storyId = searchParams.get("story") ?? "kazimir";
   const { i18n } = useTranslation();
@@ -45,19 +51,22 @@ export default function HangmanPage() {
   const [sessionLoading, setSessionLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sessionError, setSessionError] = useState<string | null>(null);
-  const [hint, setHint] = useState<string | null>(null);
+  const [hints, setHints] = useState<string[]>([]);
+  const [timeLeft, setTimeLeft] = useState(HANGMAN_DURATION_SECONDS);
 
   const hasStartedSessionRef = useRef(false);
+  const hasNavigatedRef = useRef(false);
 
   const startNewSession = useCallback(async () => {
     setSessionLoading(true);
     setSessionError(null);
-    setHint(null);
+    setHints([]);
+    setTimeLeft(HANGMAN_DURATION_SECONDS);
+    setSession(null);
+    hasNavigatedRef.current = false;
 
     try {
       const language = normalizeLanguage(i18n.language);
-
-      console.log("Starting hangman session in language:", language);
 
       const result = await startHangmanSession({
         gameType: "hangman",
@@ -86,8 +95,37 @@ export default function HangmanPage() {
     void startNewSession();
   }, [startNewSession]);
 
+  useEffect(() => {
+    if (sessionLoading || !session || hasNavigatedRef.current) {
+      return;
+    }
+
+    if (session.status === "Failed") {
+      hasNavigatedRef.current = true;
+      navigate("/lost", {
+        state: {
+          sessionId: session.sessionId,
+          timeLeft,
+        },
+        replace: true,
+      });
+      return;
+    }
+
+    if (session.status === "Success") {
+      hasNavigatedRef.current = true;
+      navigate("/won", {
+        state: {
+          sessionId: session.sessionId,
+          timeLeft,
+        },
+        replace: true,
+      });
+    }
+  }, [session, sessionLoading, navigate, timeLeft]);
+
   const handleGuess = async (letter: string) => {
-    if (!session || isSubmitting) {
+    if (!session || isSubmitting || timeLeft <= 0) {
       return;
     }
 
@@ -100,6 +138,7 @@ export default function HangmanPage() {
 
     try {
       const result = await submitHangmanGuess(session.sessionId, { letter });
+
       setSession((previous) =>
         previous ? mergeGuessResultIntoSession(previous, result) : previous,
       );
@@ -116,7 +155,11 @@ export default function HangmanPage() {
   };
 
   const handleHint = async () => {
-    if (!session || isSubmitting) {
+    if (!session || isSubmitting || timeLeft <= 0) {
+      return;
+    }
+
+    if ((session.hintsUsed ?? 0) >= MAX_HINTS) {
       return;
     }
 
@@ -125,17 +168,24 @@ export default function HangmanPage() {
 
     try {
       const result = await requestHangmanHint(session.sessionId);
-      setHint(result.hint);
+
+      setHints((previous) => [...previous, result.hint]);
 
       const refreshed = await getHangmanSession(session.sessionId);
       setSession(refreshed);
     } catch (err) {
-      const message =
-        err instanceof Error && err.message === "UNAUTHORIZED"
-          ? "Je sessie is niet geautoriseerd. Log opnieuw in."
-          : "Kon geen hint ophalen.";
+      const errorMessage = err instanceof Error ? err.message : "";
 
-      setSessionError(message);
+      if (errorMessage === "UNAUTHORIZED") {
+        setSessionError("Je sessie is niet geautoriseerd. Log opnieuw in.");
+      } else {
+        try {
+          const refreshed = await getHangmanSession(session.sessionId);
+          setSession(refreshed);
+        } catch {
+          console.warn("Kon sessie niet verversen na hintfout.");
+        }
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -143,9 +193,26 @@ export default function HangmanPage() {
 
   const handleRetry = async () => {
     hasStartedSessionRef.current = false;
+    hasNavigatedRef.current = false;
     await startNewSession();
     hasStartedSessionRef.current = true;
   };
+
+  const handleTimeExpired = useCallback(() => {
+    if (!session || hasNavigatedRef.current) {
+      return;
+    }
+
+    hasNavigatedRef.current = true;
+
+    navigate("/lost", {
+      state: {
+        sessionId: session.sessionId,
+        timeLeft: 0,
+      },
+      replace: true,
+    });
+  }, [navigate, session]);
 
   const combinedError = sessionError ?? storiesError;
   const isLoading = storiesLoading || sessionLoading || isSubmitting;
@@ -164,10 +231,12 @@ export default function HangmanPage() {
         session={session}
         isLoading={isLoading}
         error={combinedError}
-        hint={hint}
+        hints={hints}
         onGuess={handleGuess}
         onHint={handleHint}
         onRetry={handleRetry}
+        onTimeUpdate={setTimeLeft}
+        onTimeExpired={handleTimeExpired}
       />
     </main>
   );

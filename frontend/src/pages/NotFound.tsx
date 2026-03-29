@@ -13,8 +13,6 @@ export default function NotFound() {
       <Particles />
 
       <Content>
-        <Code>404</Code>
-
         <Title>{t("should-not-come")}</Title>
 
         <Text>{t("lost-story")}</Text>
@@ -36,12 +34,6 @@ export default function NotFound() {
 }
 
 /* ================= ANIMATIONS ================= */
-
-const glow = keyframes`
-  0% { text-shadow: 0 0 4px rgba(var(--accent-rgb), 0.2); }
-  50% { text-shadow: 0 0 18px rgba(var(--accent-rgb), 0.7); }
-  100% { text-shadow: 0 0 4px rgba(var(--accent-rgb), 0.2); }
-`;
 
 const float = keyframes`
   0% { transform: translateY(0); opacity: 0.2; }
@@ -69,13 +61,6 @@ const Content = styled.div`
 `;
 
 /* ================= TEXT ================= */
-
-const Code = styled.div`
-  font-size: clamp(3rem, 10vw, 6rem);
-  font-weight: 700;
-  animation: ${glow} 3s infinite ease-in-out;
-  margin-bottom: 1rem;
-`;
 
 const Title = styled.h1`
   font-size: clamp(1.5rem, 4vw, 2.5rem);

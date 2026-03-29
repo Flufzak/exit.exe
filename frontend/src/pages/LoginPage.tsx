@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
 import "../styles/login.css";
 import AppButton from "../components/ui/AppButton";
 import { useAuth } from "../hooks/useAuth";
@@ -16,20 +17,20 @@ function GoogleIcon() {
   );
 }
 
-function FacebookIcon() {
-  return (
-    <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        d="M13.5 22v-8h2.7l.4-3h-3.1V9.1c0-.9.25-1.5 1.55-1.5h1.65V5c-.28-.04-1.25-.12-2.38-.12-2.36 0-3.97 1.44-3.97 4.08V11H8v3h2.34v8h3.16Z"
-        fill="currentColor"
-      />
-    </svg>
-  );
-}
+// function FacebookIcon() {
+//   return (
+//     <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
+//       <path
+//         d="M13.5 22v-8h2.7l.4-3h-3.1V9.1c0-.9.25-1.5 1.55-1.5h1.65V5c-.28-.04-1.25-.12-2.38-.12-2.36 0-3.97 1.44-3.97 4.08V11H8v3h2.34v8h3.16Z"
+//         fill="currentColor"
+//       />
+//     </svg>
+//   );
+// }
 
 export default function Login() {
   const [logoSrc, setLogoSrc] = useState("/images/logo/darkmodeLogo.png");
-  const { loginWithGoogle, loginWithFacebook, loading } = useAuth();
+  const { loginWithGoogle, loading, isAuthenticated } = useAuth();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -61,6 +62,7 @@ export default function Login() {
   }, []);
 
   if (loading) return <Loader />;
+  if (isAuthenticated) return <Navigate to="/profile" replace />;
 
   return (
     <main className="login-main">
@@ -84,12 +86,12 @@ export default function Login() {
               </span>
             </AppButton>
 
-            <AppButton variant="primary" onClick={loginWithFacebook}>
+            {/* <AppButton variant="primary" onClick={loginWithFacebook}>
               <span className="button-content">
                 <FacebookIcon />
                 <span>{t("continue-facebook")}</span>
               </span>
-            </AppButton>
+            </AppButton> */}
           </div>
         </div>
       </section>

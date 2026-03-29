@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { request } from "../api/request";
 import { MeResponse } from "../types/auth";
-import { authRoutes } from "../api/routes";
+import { googleLoginUrl, facebookLoginUrl } from "../api/routes";
 import { AuthContext } from "./AuthContext";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -28,11 +28,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   function loginWithGoogle() {
-    window.location.href = authRoutes.google;
+    window.location.href = googleLoginUrl();
   }
 
   function loginWithFacebook() {
-    window.location.href = authRoutes.facebook;
+    window.location.href = facebookLoginUrl();
   }
 
   useEffect(() => {

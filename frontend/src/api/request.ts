@@ -12,7 +12,9 @@ export async function request<T>(
 ): Promise<T> {
   const { method = "GET", body, headers } = options;
 
-  const requestHeaders: HeadersInit = { ...headers };
+  const requestHeaders: Record<string, string> = {
+    ...(headers as Record<string, string>),
+  };
   if (body) {
     requestHeaders["Content-Type"] = "application/json";
   }

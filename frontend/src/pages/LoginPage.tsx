@@ -30,7 +30,7 @@ function GoogleIcon() {
 
 export default function Login() {
   const [logoSrc, setLogoSrc] = useState("/images/logo/darkmodeLogo.png");
-const { loginWithGoogle, loading, isAuthenticated } = useAuth();
+  const { loginWithGoogle, loading, isAuthenticated } = useAuth();
   const { t } = useTranslation();
 
   useEffect(() => {

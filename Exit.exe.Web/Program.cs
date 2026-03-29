@@ -37,7 +37,7 @@ services.AddOpenApi(options =>
         document.Info.Description =
             "Escape-room puzzle game API.\n\n" +
             "\ud83d\udd10 **Cookie-based auth** \u2014 " +
-            "[Login with Google](/api/auth/login/google) " +
+            "[Login with Google](/api/auth/login/google?returnUrl=/scalar/v1) " +
             "to authenticate, then use *Try it* on protected endpoints.";
 
         return Task.CompletedTask;
@@ -216,7 +216,9 @@ var app = builder.Build();
 
 // Middleware pipeline
 app.UseExceptionHandler();
-app.UseHttpsRedirection();
+
+if (!app.Environment.IsDevelopment())
+    app.UseHttpsRedirection();
 
 app.UseCors("Spa");         // must be before auth for browser calls
 app.UseAuthentication();

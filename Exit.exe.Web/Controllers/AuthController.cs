@@ -21,10 +21,29 @@ public sealed class AuthController(
     [AllowAnonymous]
     public IActionResult LoginGoogle([FromQuery] string? returnUrl = null)
     {
-        returnUrl ??= DefaultReturnUrl;
+        returnUrl ??= ResolveReturnUrl();
         var callback = Url.Action(nameof(GoogleCallback), "Auth", new { returnUrl });
         var props = signInManager.ConfigureExternalAuthenticationProperties("Google", callback);
         return Challenge(props, "Google");
+    }
+
+    private string ResolveReturnUrl()
+    {
+        var referer = Request.Headers.Referer.ToString();
+        if (!string.IsNullOrWhiteSpace(referer) && Uri.TryCreate(referer, UriKind.Absolute, out var refUri))
+        {
+            // Came from Scalar on the same host → redirect back to Scalar
+            if (refUri.AbsolutePath.StartsWith("/scalar", StringComparison.OrdinalIgnoreCase))
+                return refUri.GetLeftPart(UriPartial.Path);
+
+            // Came from an allowed SPA origin → redirect back there
+            var allowed = configuration.GetSection("Auth:AllowedReturnUrlPrefixes")
+                .GetChildren().Select(c => c.Value).Where(v => v is not null);
+            if (allowed.Any(prefix => referer.StartsWith(prefix!, StringComparison.OrdinalIgnoreCase)))
+                return referer;
+        }
+
+        return DefaultReturnUrl;
     }
 
     // GET /api/auth/login/google/callback

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
 import "../styles/login.css";
 import AppButton from "../components/ui/AppButton";
 import { useAuth } from "../hooks/useAuth";
@@ -29,7 +30,7 @@ function FacebookIcon() {
 
 export default function Login() {
   const [logoSrc, setLogoSrc] = useState("/images/logo/darkmodeLogo.png");
-  const { loginWithGoogle, loginWithFacebook, loading } = useAuth();
+  const { loginWithGoogle, loginWithFacebook, loading, isAuthenticated } = useAuth();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -61,6 +62,7 @@ export default function Login() {
   }, []);
 
   if (loading) return <Loader />;
+  if (isAuthenticated) return <Navigate to="/profile" replace />;
 
   return (
     <main className="login-main">

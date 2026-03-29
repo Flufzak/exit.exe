@@ -12,13 +12,15 @@ export async function request<T>(
 ): Promise<T> {
   const { method = "GET", body, headers } = options;
 
+  const requestHeaders: HeadersInit = { ...headers };
+  if (body) {
+    requestHeaders["Content-Type"] = "application/json";
+  }
+
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     method,
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...headers,
-    },
+    headers: requestHeaders,
     body: body ? JSON.stringify(body) : undefined,
   });
 

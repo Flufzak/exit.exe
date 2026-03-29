@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import AppButton from "../components/ui/AppButton";
 
@@ -7,10 +7,11 @@ export default function LosePage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  // tijdelijke data
-  const hintsUsed = 2;
-  const time = "0:00";
-  const score = 120;
+  const location = useLocation();
+
+  const hintsUsed = location.state?.hintsUsed ?? 0;
+  const time = location.state?.time ?? "0:00";
+  const score = location.state?.score ?? 0;
 
   return (
     <Wrapper>

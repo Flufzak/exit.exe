@@ -12,7 +12,8 @@ namespace Exit.exe.Web.Controllers;
 public sealed class AuthController(
     SignInManager<ApplicationUser> signInManager,
     UserManager<ApplicationUser> userManager,
-    IConfiguration configuration) : ControllerBase
+    IConfiguration configuration,
+    IWebHostEnvironment environment) : ControllerBase
 {
     private string DefaultReturnUrl => configuration["Auth:DefaultReturnUrl"] ?? "/";
 
@@ -43,6 +44,13 @@ public sealed class AuthController(
 
     private bool IsAllowedOrigin(Uri uri)
     {
+        // In development, allow any localhost origin (Aspire assigns random ports)
+        if (environment.IsDevelopment()
+            && string.Equals(uri.Host, "localhost", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
         var allowedOrigins = configuration.GetSection("Auth:AllowedReturnUrlPrefixes")
             .GetChildren()
             .Select(c => c.Value)

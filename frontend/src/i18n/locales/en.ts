@@ -67,4 +67,17 @@ export default {
     "The bell tolls again. This time, it does not stop. The torches burn lower, shadows stretching across the stone as they close in.",
   "priests-do-not-rush":
     "The priests do not rush. They never do. Whatever Kazimir promised them, it will be paid for tonight.",
+
+  //won
+  "you-escaped": "YOU ESCAPED",
+  "final-piece-slides": "The final piece slides into place.",
+  "mural-aligns": "The mural aligns.",
+  "crack-runs-through-wall":
+    "A crack runs through the wall. Cold air rushes in.",
+  "chains-fall-loose": "Chains fall loose.",
+  "you-dont-look-back": "You don’t look back.",
+  "kazimir-promised": "Whatever Kazimir promised them…",
+  "never-meant-for-you": "it was never meant for you.",
+  attempts: "Attempts",
+  "final-score": "Final score",
 };

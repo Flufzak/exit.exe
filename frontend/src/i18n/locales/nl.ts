@@ -67,4 +67,17 @@ export default {
     "De klok luidt opnieuw. Deze keer stopt ze niet. De fakkels branden lager, terwijl schaduwen zich over de stenen uitstrekken en dichterbij kruipen.",
   "priests-do-not-rush":
     "De priesters haasten zich niet. Dat doen ze nooit. Wat Kazimir hun beloofde, zal vannacht worden opgeëist.",
+
+  //gewonnen
+  "you-escaped": "JE BENT ONTSNAPT",
+  "final-piece-slides": "Het laatste puzzelstuk schuift op zijn plaats.",
+  "mural-aligns": "De muurschildering valt samen.",
+  "crack-runs-through-wall":
+    "Een barst loopt door de muur. Koude lucht stroomt naar binnen.",
+  "chains-fall-loose": "Kettingen vallen los.",
+  "you-dont-look-back": "Je kijkt niet achterom.",
+  "kazimir-promised": "Wat Kazimir hun ook beloofd had…",
+  "never-meant-for-you": "het was nooit voor jou bedoeld.",
+  attempts: "Pogingen",
+  "final-score": "Eindscore",
 };

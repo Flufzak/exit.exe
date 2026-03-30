@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import "./styles/App.css";
 import LosePage from "./pages/LosePage";
+import WinPage from "./pages/WinPage";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/lost" element={<LosePage />} />
             <Route path="/hangman" element={<HangmanPage />} />
+            <Route path="/won" element={<WinPage />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />
